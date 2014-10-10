@@ -1,0 +1,3 @@
+C:\Project\Queue\Version_4\Source\TestQueueService\Queue\obj\Debug\TestQueueService.csprojResolveAssemblyReference.cache
+C:\Project\Queue\Version_4\Source\TestQueueService\Queue\obj\Debug\Queue.exe
+C:\Project\Queue\Version_4\Source\TestQueueService\Queue\obj\Debug\Queue.pdb
