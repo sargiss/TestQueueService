@@ -18,6 +18,9 @@ namespace Queue
             Receive(NetMQSocket);
         }
 
+        public ZMessage(object body):this(body.ToString())
+        { }
+
         public ZMessage(string body, Encoding encoding)
         {
             frames.Add(encoding.GetBytes(body));

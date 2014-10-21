@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Questionnaire" table="EQ_QUESTIONNAIRE" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true"> 
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">QUESTIONNAIRE_SEQ</param>
+      </generator>
+    </id>
+    
+    <many-to-one name="Department" column="DEPARTMENT_ID" class="Department" foreign-key="true" cascade="none" />
+    
+    <property name="Name" column="NAME" />
+    <property name="AnswersSerialized" column="ANSWERS" />
+    <property name="Version" column="VERSION_ID" not-null="true" />
+    <property name="Inserted" column="INSERTED" not-null="true" /> 
+  </class>  
+</hibernate-mapping>

@@ -11,10 +11,13 @@ namespace Queue
     {
         Dictionary<string, OperatorSession> _sessions = new Dictionary<string, OperatorSession>();
 
+        public event Action TicketClose;
         public event Action SessionFree;
-        public event Action SessionClear;
+        public event Action SessionPause;
         public event Action SessionBusy;
         public event Action SessionDestroy;
+        public event Action TicketSkipped;
+        public event Action TicketMissed;
 
         public static OperatorSessionManager Instance { get; }
 
@@ -30,36 +33,30 @@ namespace Queue
             return null;
         }
 
-        public void Logout(string sessionKey)
+        public void Logout(OperatorSession session)
         {
-            _sessions.Remove(sessionKey);
+            _sessions.Remove(session.SessionKey);
+            SessionDestroy();
         }
 
         public void ChangeState(Status status, OperatorSession sessionInfo)
         {
-            var currentStatus = sessionInfo.SessionStatus;
+            var currentStatus = sessionInfo.Status;
             if (status == currentStatus)
                 return;
 
             switch (status)
             {
                 case Status.Free:
-                    sessionInfo.SessionStatus = status;
                     if (currentStatus == Status.Busy)
                     {
-                        
-                        SessionClear();
-                        SessionFree();
+                        TicketClose();
                     }
-                    else
-                    {
-                        SessionFree();
-                    }
+                    SessionFree();
                     break;
                 case Status.Busy:
                     if (currentStatus == Status.Free)
                     {
-                        sessionInfo.SessionStatus = status;
                         SessionBusy();
                     }
                     else
@@ -68,19 +65,29 @@ namespace Queue
                     }
                     break;
                 case Status.Pause:
-                    sessionInfo.SessionStatus = status;
-                    if (currentStatus == Status.Free)
+                    if (currentStatus == Status.Busy)
                     {
-                        SessionClear();
+                        TicketClose();
                     }
-                    else
-                    {
-
-                    }
+                    SessionPause();
                     break;
                 default:
                     throw new Exception("Incorrect status");
             }
+
+            sessionInfo.Status = status;
+        }
+
+        public void SkipTicketByOperator(OperatorSession session)
+        {
+            TicketSkipped();
+            SessionFree();
+        }
+
+        public void MissedByCustomer(OperatorSession session)
+        {
+            TicketMissed();
+            SessionFree();
         }
     }
 
@@ -89,6 +96,6 @@ namespace Queue
         public long TicketId { get; set; }
         public long WindowId { get; set; }
         public string SessionKey { get; }
-        public Status SessionStatus { get; set; }
+        public Status Status { get; set; }
     }
 }

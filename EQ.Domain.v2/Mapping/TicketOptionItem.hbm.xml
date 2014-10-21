@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="TicketOptionItem" table="EQ_TICKET_OPTION" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">TICKET_OPTION_SEQ</param>
+      </generator>
+    </id>
+    <many-to-one name="Ticket" column="TICKET_ID" class="Ticket" foreign-key="true" not-null="true" cascade="none" />
+    <many-to-one name="OptionSettingValue" column="OPTION_SETTING_VALUE_ID" class="OptionSettingValue" foreign-key="true" not-null="true" cascade="none" />
+  </class>
+</hibernate-mapping>

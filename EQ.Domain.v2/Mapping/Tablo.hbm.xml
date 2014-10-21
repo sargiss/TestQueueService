@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Tablo" table="EQ_TABLO" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true"> 
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">TABLO_SEQ</param>
+      </generator>
+    </id>
+    <discriminator column="TYPE_ID" />
+    <property name="TabloType" formula="TYPE_ID"/>
+    <many-to-one name="Department" column="DEPARTMENT_ID" class="Department" foreign-key="true" cascade="none" />
+    <property name="Name" column="NAME" not-null="true" length="500"/>
+    <property name="Address" column="ADDRESS" not-null="true" length="50"/>
+    <property name="Key" column="KEY" length="50"/>
+    <property name="SettingXml" column="Setting"/>
+    <bag name="Windows" table="EQ_TABLO_WINDOW_LNK" lazy="true" inverse="true" cascade="all-delete-orphan">
+      <key column="TABLO_ID" on-delete="cascade" />
+      <one-to-many class="TabloWindow"/>
+    </bag>
+
+    <subclass name="IndividualTablo" discriminator-value="20" dynamic-update="false" select-before-update="true" />
+
+    <subclass name="QualityPad" discriminator-value="30" dynamic-update="false" select-before-update="true" />
+
+    <subclass name="CommonTablo" discriminator-value="9" dynamic-update="false" select-before-update="true">
+      <bag name="Queues" table="EQ_TABLO_QUEUE_LNK" lazy="true" cascade="none">
+        <key column="TABLO_ID"/>
+        <many-to-many class="Queue" column="QUEUE_ID"/>
+      </bag>
+      <subclass name="CommonLcdTablo" extends="CommonTablo" discriminator-value="10" dynamic-update="false" select-before-update="true" />
+      <subclass name="CommonLedTablo" extends="CommonTablo" discriminator-value="11" dynamic-update="false" select-before-update="true" />
+    </subclass>
+  </class>
+
+  <class name="TabloWindow" table="EQ_TABLO_WINDOW_LNK" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true">
+    <composite-id>
+      <key-many-to-one name="Tablo" class="Tablo" column="TABLO_ID"/>
+      <key-many-to-one name="Window" class="Window" column="WINDOW_ID"/>
+    </composite-id>
+    <property name="DeviceId" column="DEVICE_ID" />
+  </class>
+
+  <sql-query name="sqChangeTabloType" cacheable="false">
+    UPDATE eq_tablo SET type_id = :typeId, setting = null WHERE id = :id
+  </sql-query>
+  
+</hibernate-mapping>

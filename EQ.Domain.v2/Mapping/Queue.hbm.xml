@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Queue" table="EQ_QUEUE" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true"> 
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">QUEUE_SEQ</param>
+      </generator>
+    </id>
+    <discriminator column="TYPE_ID"/>
+    <many-to-one name="Department" column="DEPARTMENT_ID" class="Department" foreign-key="true" cascade="none" />
+    <property name="Type" formula="TYPE_ID"/>
+    <property name="Name" column="NAME" not-null="true" length="500"/>
+    <property name="DisplayName" column="DISPLAY_NAME" length="500"/>
+    <property name="Description" column="DESCRIPTION" length="2000"/>
+    <property name="Remark" column="REMARK" length="2000"/>
+    <property name="Duration" column="DURATION" not-null="true"/>
+    <property name="UniqueTicketCount" column="UNIQUE_TICKET_COUNT"/>
+    <property name="Prefix" column="PREFIX" length="5"/>
+    <property name="Enable" column="ENABLE"/>
+    <property name="ImpossibleRecordMessage" column="IMPOSSIBLE_REC_MSG" type="String" length="2000"/>
+    <property name="Order" column="ORDER_NUM"/>
+    
+    <many-to-one name="Parent" column="PARENT_ID" class="Queue" foreign-key="true" cascade="none" />
+    <many-to-one name="Group" column="CATEGORY_ID" class="Group" foreign-key="true" cascade="none" />
+    <bag name="Children" table="EQ_QUEUE" lazy="true" inverse="true" cascade="save-update">
+      <key column="PARENT_ID" on-delete="cascade"/>
+      <one-to-many class="Queue"/>
+    </bag>
+    <bag name="Sources" table="EQ_QUEUE_SOURCE_LNK" lazy="true" cascade="none">
+      <key column="QUEUE_ID"/>
+      <many-to-many class="Source" column="SOURCE_ID"/>
+    </bag>
+    <bag name="LineSettings" table="EQ_LINE_SETTING" lazy="true" inverse="true" cascade="save-update">
+      <key column="QUEUE_ID" on-delete="cascade"></key>
+      <one-to-many class="LineSetting"/>
+    </bag>
+    <bag name="TimeSettings" table="EQ_TIME_SETTING" lazy="true" inverse="true" cascade="save-update">
+      <key column="QUEUE_ID" on-delete="cascade" ></key>
+      <one-to-many class="TimeSetting"/>
+    </bag>
+    <bag name="OptionSettings" table="EQ_OPTION_SETTING" lazy="true" inverse="true" cascade="save-update">
+      <key column="QUEUE_ID" on-delete="cascade" ></key>
+      <one-to-many class="OptionSetting"/>
+    </bag>    
+    <bag name="TimetableList" table="EQ_TIMETABLE" lazy="true" inverse="true" cascade="save-update">
+      <key column="QUEUE_ID" on-delete="cascade"></key>
+      <one-to-many class="Timetable"/>
+    </bag>
+    <bag name="QueueInWindowList" table="EQ_QUEUE_WINDOW_LNK" lazy="true" inverse="true" cascade="save-update">
+      <key column="QUEUE_ID" on-delete="cascade"></key>
+      <one-to-many class="QueueInWindow"/>
+    </bag>
+    <bag name="CommonPanels" table="EQ_TABLO_QUEUE_LNK" lazy="true" inverse="true" cascade="none">
+      <key column="QUEUE_ID"/>
+      <many-to-many class="CommonTablo" column="TABLO_ID"/>
+    </bag>
+    
+    <subclass name="LiveQueue" discriminator-value="10" dynamic-update="false" select-before-update="true">
+      <property name="EnableAdditionalTicket" column="ENABLE_ADD_TICKET"/>
+      <property name="EnableUnguaranteedTicket" column="ENABLE_UNGUARANTEED_TICKET"/>
+      <property name="PreRecordQuestion" column="PRE_REC_QUESTION" length="2000"/>
+      <property name="PreRecordAnswer" column="PRE_REC_ANSWER" length="2000"/>
+      <property name="PreRecordPreferentialQuestion" column="PRE_REC_PREFERENTIAL_QUESTION" length="2000"/>
+      <property name="AdditionalTicketCount" formula="(SELECT NVL(SUM(at.VALUE),0) FROM EQ_ADD_TICKET at WHERE at.INSERTED BETWEEN trunc(SYSDATE) AND trunc(SYSDATE)+1 AND at.QUEUE_ID=ID)" lazy="true" insert="false" update="false"/>
+    </subclass>
+    
+    <subclass name="PrerecordQueue" discriminator-value="20" dynamic-update="false" select-before-update="true">
+      <property name="PortalId" column="PORTAL_ID" />
+      <property name="StartRecordInverval" column="START_REC_INTERVAL" not-null="true"/>
+      <property name="EndRecordInverval" column="END_REC_INTERVAL" not-null="true"/>
+      <property name="EnableChooseDate" column="ENABLE_CHOOSE_DATE"/>
+      <property name="EnableChooseTime" column="ENABLE_CHOOSE_TIME" />
+    </subclass>
+  </class>
+</hibernate-mapping>

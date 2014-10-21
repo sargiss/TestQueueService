@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Group" table="EQ_QUEUE_CATEGORY_VOC" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true">
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence"></param>
+      </generator>
+    </id>
+    <property name="Name" column="NAME" not-null="true" length="500"/>
+    <many-to-one name="Parent" column="PARENT_ID" class="Group" foreign-key="true" cascade="none" />
+  </class>
+</hibernate-mapping>

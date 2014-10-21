@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Answer" table="EQ_QSTN_ANSWER" xmlns="urn:nhibernate-mapping-2.2"> 
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">QSTN_SEQ</param>
+      </generator>
+    </id>
+    
+    <many-to-one name="Question" column="QUESTION_ID" class="Question" foreign-key="true" cascade="delete" />
+
+    <property name="Sequence" column="SEQ" not-null="true"/>
+    <property name="Text" column="ANSWER" length="250"/>
+    <property name="IsShow" column="SHOW" not-null="true"/>    
+    <property name="Type" column="TYPE" not-null="true" type="AnswerType"/>
+    <property name="Inserted" column="INSERTED" not-null="true" />
+    <property name="Deleted" column="DELETED" />
+  </class>  
+</hibernate-mapping>

@@ -1,0 +1,14 @@
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\EQ.Domain.v2.dll
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\EQ.Domain.v2.pdb
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\EQ.Common.dll
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\EQ.Core.Interface.dll
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\PagedList.dll
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\CORE.Svc.dll
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\log4net.dll
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\EQ.Common.pdb
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\EQ.Core.Interface.pdb
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\PagedList.xml
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\bin\Debug\CORE.Svc.pdb
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\obj\Debug\EQ.Domain.v2.csprojResolveAssemblyReference.cache
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\obj\Debug\EQ.Domain.v2.dll
+c:\Project\Queue\Version_4\Source\EQ.Domain.v2\obj\Debug\EQ.Domain.v2.pdb

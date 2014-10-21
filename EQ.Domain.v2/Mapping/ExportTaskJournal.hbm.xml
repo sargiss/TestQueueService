@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="ExportTaskJournal" table="EQ_EXP_TASK_JOURNAL" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">EQ_EXP_JOURNAL_SEQ</param>
+      </generator>
+    </id>
+    
+    <property name="TaskLaunched" column="TASK_LAUNCHED" not-null="true"/>
+    <property name="TaskFinished" column="TASK_FINISHED" />
+    <property name="DateFrom" column="EXPORT_FROM_DATE" />
+    <property name="DateTo" column="EXPORT_TO_DATE" />
+    <property name="ErrorFileName" column="ERROR_FILE_PATH" length="500" />
+    <property name="IsError" column="IS_ERROR" />
+    <property name="Manual" column="IS_MANUAL" />
+
+    <bag name="Details" table="EQ_EXP_DETAILED_TASK_JOURNAL" cascade="save-update">
+      <key column="TASK_ID"/>
+      <one-to-many class="ExportDetailedJournal"/>
+    </bag>
+  </class>
+</hibernate-mapping>

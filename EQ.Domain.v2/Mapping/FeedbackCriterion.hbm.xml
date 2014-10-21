@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="FeedbackCriterion" table="EQ_FEEDBACK_CRITERION"> 
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">FEEDBACK_CRITERION_SEQ</param>
+      </generator>
+    </id>
+    
+    <many-to-one name="Department" column="DEPARTMENT_ID" class="Department" foreign-key="true" cascade="none" not-null="true" />
+    
+    <property name="Name" column="NAME" not-null="true" length="250"/>
+    <property name="Sequence" column="SEQ" not-null="true"/>
+    <property name="Enabled" column="ENABLED" not-null="true"/>
+    <property name="Inserted" column="INSERTED" not-null="true"/>
+    <property name="Deleted" column="DELETED"/>
+  </class>
+</hibernate-mapping>

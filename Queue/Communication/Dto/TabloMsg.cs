@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Queue
+namespace Queue.Dto
 {
-    class TicketStateManager
+    class TabloMsg
     {
-        public void SetStatus()
-        {
-            
-        }
     }
 }

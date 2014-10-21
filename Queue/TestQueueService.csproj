@@ -43,6 +43,7 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -51,14 +52,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\QueryTicketMsg.cs" />
+    <Compile Include="Dto\TabloMsg.cs" />
+    <Compile Include="QueryTicketServiceClient.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="OperatorSessionServer.cs" />
+    <Compile Include="Dto\SessionEventType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SessionChangeStateMsg.cs" />
-    <Compile Include="SessionManager.cs" />
+    <Compile Include="Dto\OperatorSessionEventMsg.cs" />
+    <Compile Include="OperatorSessionManager.cs" />
+    <Compile Include="QueryTicketServer.cs" />
+    <Compile Include="RequestHandler.cs" />
     <Compile Include="StopSignal.cs" />
+    <Compile Include="TabloServiceClient.cs" />
     <Compile Include="TicketStateManager.cs" />
     <Compile Include="Worker.cs" />
     <Compile Include="ZMessage.cs" />

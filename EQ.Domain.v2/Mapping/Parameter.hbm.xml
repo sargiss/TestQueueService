@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Parameter" table="EQ_PARAMS" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true">
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">PARAM_SEQ</param>
+      </generator>
+    </id>
+    <property name="Name" column="NAME" not-null="true" length="200"/>
+    <property name="Caption" column="Caption" not-null="true" length="500"/>
+    <property name="Remark" column="REMARK" length="4000"/>
+    <property name="Value" column="VAL" not-null="true" length="1000"/>
+    <property name="Regex" column="REGEX" length="200"/>
+    <property name="IsRedefining" column="Redefining"/>
+    <property name="AllowedValues" column="ALLOWED_VALUES" length="1000"/>
+    <property name="DataType" column="DATATYPE" />
+  </class>
+</hibernate-mapping>

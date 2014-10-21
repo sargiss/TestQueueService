@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BC7A9A16-C6DA-483F-B6F7-59DDE784F7CD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EQ.Domain.v2</RootNamespace>
+    <AssemblyName>EQ.Domain.v2</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EntityIds.cs" />
+    <Compile Include="HashManager.cs" />
+    <Compile Include="Map.cs" />
+    <Compile Include="Misc\BoundaryPriorities.cs" />
+    <Compile Include="Model\AdditionalTicket.cs" />
+    <Compile Include="Model\Address.cs" />
+    <Compile Include="Model\Common.cs" />
+    <Compile Include="Model\Department.cs" />
+    <Compile Include="Model\Division.cs" />
+    <Compile Include="Model\ExportDetailedJournal.cs" />
+    <Compile Include="Model\Feedback.cs" />
+    <Compile Include="Model\FeedbackCriterion.cs" />
+    <Compile Include="Model\FeedbackScore.cs" />
+    <Compile Include="Model\Group.cs" />
+    <Compile Include="Model\Holiday.cs" />
+    <Compile Include="Model\Info.cs" />
+    <Compile Include="Model\ExportTaskJournal.cs" />
+    <Compile Include="Model\LineSetting.cs" />
+    <Compile Include="Model\LogEntry.cs" />
+    <Compile Include="Model\OptionSetting.cs" />
+    <Compile Include="Model\Parameter.cs" />
+    <Compile Include="Model\Answer.cs" />
+    <Compile Include="Model\Questionary.cs" />
+    <Compile Include="Model\Question.cs" />
+    <Compile Include="Model\Customer.cs" />
+    <Compile Include="Model\Process.cs" />
+    <Compile Include="Model\Questionnaire.cs" />
+    <Compile Include="Model\Queue.cs" />
+    <Compile Include="Model\QueueInWindow.cs" />
+    <Compile Include="Model\Role.cs" />
+    <Compile Include="Model\Source.cs" />
+    <Compile Include="Model\Tablo.cs" />
+    <Compile Include="Model\Terminal.cs" />
+    <Compile Include="Model\Ticket.cs" />
+    <Compile Include="Model\TicketLineItem.cs" />
+    <Compile Include="Model\TicketOptionItem.cs" />
+    <Compile Include="Model\TicketTimeItem.cs" />
+    <Compile Include="Model\TimeSetting.cs" />
+    <Compile Include="Model\Timetable.cs" />
+    <Compile Include="Model\User.cs" />
+    <Compile Include="Model\Version.cs" />
+    <Compile Include="Model\Window.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueueAvailabilityInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\AdditionalTicket.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mapping\Common.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Department.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mapping\Feature.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Group.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Holiday.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Info.hbm.xml" />
+    <EmbeddedResource Include="Mapping\LineSetting.hbm.xml" />
+    <EmbeddedResource Include="Mapping\LogEntry.hbm.xml" />
+    <EmbeddedResource Include="Mapping\OptionSetting.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Parameter.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Process.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Questionnaire.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Queue.hbm.xml" />
+    <EmbeddedResource Include="Mapping\QueueInWindow.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Role.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Source.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Tablo.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Terminal.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Ticket.hbm.xml" />
+    <EmbeddedResource Include="Mapping\TicketLineItem.hbm.xml" />
+    <EmbeddedResource Include="Mapping\TicketOptionItem.hbm.xml" />
+    <EmbeddedResource Include="Mapping\TicketTimeItem.hbm.xml" />
+    <EmbeddedResource Include="Mapping\TimeSetting.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Timetable.hbm.xml" />
+    <EmbeddedResource Include="Mapping\User.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Version.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Window.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EQ.Common\EQ.Common.csproj">
+      <Project>{51f4a1d9-ec6d-48fb-bb3b-eb4a696781ed}</Project>
+      <Name>EQ.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EQ.Core.Interface\EQ.Core.Interface.csproj">
+      <Project>{a1ab0a29-eaf0-402a-ba94-051a6a67cf64}</Project>
+      <Name>EQ.Core.Interface</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\Feedback.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\FeedbackCriterion.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\FeedbackScore.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\Question.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\Answer.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\Customer.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\Questionary.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\ExportDetailedJournal.hbm.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mapping\ExportTaskJournal.hbm.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mapping\Address.hbm.xml" />
+    <EmbeddedResource Include="Mapping\Division.hbm.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

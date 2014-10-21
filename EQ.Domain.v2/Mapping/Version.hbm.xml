@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Version" table="EQ_ABOUT" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true">
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">VERSION_SEQ</param>
+      </generator>
+    </id>
+    <property name="Name" column="NAME" not-null="true"/>
+    <property name="Caption" column="CAPTION" not-null="true"/>
+    <property name="Remark" column="REMARK"/>
+    <property name="VersionNumber" column="VERSION" not-null="true"/>
+    <property name="Updated" column="UPDATED" not-null="true"/>
+  </class>
+</hibernate-mapping>

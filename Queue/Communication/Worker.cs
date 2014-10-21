@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using NetMQ;
 using Newtonsoft.Json;
+using Queue.Dto;
 
 namespace Queue
 {
@@ -54,14 +55,10 @@ namespace Queue
 
             var session = OperatorSessionManager.Instance.GetSession(request.SessionId);
 
-            switch(request.Event)
-            {
-                case SessionEvent.StateChanged:
-                    
+            if (session == null)
+                return;
 
-                    break;
-
-            }
+            new RequestHandler().Process(session, request);
         }
     }
 }

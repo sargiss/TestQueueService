@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <sql-query name="sqGetLiveTicketNumber" comment="Вычисляем номер талона" cacheable="false">
+    <return-scalar column="value" type="Int32"/>
+    SELECT NVL(MAX(DECODE(LTRIM(t.NUM, q.PREFIX), t.NUM, 0, NULL, TO_NUMBER(t.NUM), TO_NUMBER(LTRIM(t.NUM, q.PREFIX)))),0)+1 value FROM EQ_TICKET t, EQ_QUEUE q WHERE q.ID = t.QUEUE_ID AND t.QUEUE_ID=:queue_id AND t.PARENT_ID IS NULL AND t.INSERTED BETWEEN TRUNC(:date) AND TRUNC(:date)+1
+  </sql-query>
+  <sql-query name="sqGetPreliminaryTicketNumber" comment="Вычисляем номер талона" cacheable="false">
+    <return-scalar column="value" type="Int32"/>
+    SELECT NVL(MAX(DECODE(LTRIM(t.NUM, q.PREFIX), t.NUM, 0, NULL, TO_NUMBER(t.NUM), TO_NUMBER(LTRIM(t.NUM, q.PREFIX)))),0)+1 value FROM EQ_TICKET t, EQ_QUEUE q WHERE q.ID = t.QUEUE_ID AND t.QUEUE_ID=:queue_id AND t.PARENT_ID IS NULL AND t.REC_DATE BETWEEN TRUNC(:date) AND TRUNC(:date)+1
+  </sql-query>
+  <sql-query name="sqChangeQueueTypeToLive" cacheable="false">
+    UPDATE EQ_QUEUE SET TYPE_ID = 10 WHERE ID= :id
+  </sql-query>
+  <sql-query name="sqChangeQueueTypeToPrerecord" cacheable="false">
+    UPDATE EQ_QUEUE SET TYPE_ID = 20 WHERE ID= :id
+  </sql-query>
+
+  <sql-query name="sqGetPriorityAdditionalTicket" cacheable="false">
+    SELECT MIN(ID) value
+    FROM EQ_ADD_TICKET at
+    WHERE at.INSERTED BETWEEN trunc(SYSDATE) AND trunc(SYSDATE)+1 AND at.QUEUE_ID=:queueId
+    GROUP BY WINDOW_ID, USER_ID
+    HAVING  SUM(at.VALUE) > 0
+    ORDER BY WINDOW_ID ASC
+  </sql-query>
+  
+</hibernate-mapping>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="FeedbackScore" table="EQ_FEEDBACK_SCORE"> 
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">FEEDBACK_SCORE_SEQ</param>
+      </generator>
+    </id>
+    
+    <many-to-one name="Feedback" column="FEEDBACK_ID" class="Feedback" foreign-key="true" cascade="none" not-null="true" />
+    <many-to-one name="Criterion" column="CRITERION_ID" class="FeedbackCriterion" foreign-key="true" cascade="none" not-null="true" />
+    
+    <property name="Score" column="SCORE" not-null="true"/>
+    <property name="Inserted" column="INSERTED" not-null="true"/>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Ticket" table="EQ_TICKET" xmlns="urn:nhibernate-mapping-2.2">
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">TICKET_SEQ</param>
+      </generator>
+    </id>
+    <discriminator column="TYPE_ID"/>
+    <property name="Type" formula="TYPE_ID"/>
+    <property name="Date" column="INSERTED" not-null="true"/>
+    <property name="Number" column="NUM" not-null="true" length="50"/>
+    <property name="ResourceId" column="RESOURCE_ID"/>
+    <property name="Quality" column="QUALITY"/>
+    <many-to-one name="Queue" column="QUEUE_ID" class="Queue" not-null="true" cascade="none" />
+    <many-to-one name="Window" column="WINDOW_ID" class="Window" not-null="false" cascade="none"/> 
+    <many-to-one name="Source" column="SOURCE_ID" class="Source" not-null="true" cascade="none"/>
+    <many-to-one name="PreviousTicket" column="PREV_TICKET_ID" class="Ticket" not-null="false" cascade="none"/>
+    <bag name="Lines" table="EQ_TICKET_LINE" lazy="true" cascade="all">
+      <key column="TICKET_ID"></key>
+      <one-to-many class="TicketLineItem"/>
+    </bag>
+    <bag name="AddtionalTimeParams" table="EQ_TICKET_TIME" lazy="true" cascade="all">
+      <key column="TICKET_ID"></key>
+      <one-to-many class="TicketTimeItem"/>
+    </bag>
+    <bag name="Options" table="EQ_TICKET_OPTION" lazy="true" cascade="all">
+      <key column="TICKET_ID"></key>
+      <one-to-many class="TicketOptionItem"/>
+    </bag>
+    <bag name="ProcessList" table="EQ_PROCESS" lazy="true" cascade="all">
+      <key column="TICKET_ID"></key>
+      <one-to-many class="Process"/>
+    </bag>
+    <property name="CurrentStatus" formula="GET_CURRENT_TICKET_STATUS(ID)" type="TicketStatus" update="false" insert="false"/>
+    <property name="LastCallTime" formula="(SELECT NVL(ROUND(TO_NUMBER(MAX(P.INSERTED) - TO_DATE(TRUNC(MAX(P.INSERTED)))) * 1440),0) FROM EQ_PROCESS P WHERE P.TICKET_ID=ID AND P.TICKET_STATUS_ID=20)" type="Int32" update="false" insert="false" lazy="true"/>
+    
+    <subclass name="LiveTicket" discriminator-value="10" dynamic-update="false" select-before-update="true">
+      <property name="Duration" column="DURATION" />
+      <property name="IsGuaranteed" column="IS_GUARANTEED" />
+      <property name="Priority" column="PRIORITY"  not-null="true"/>
+      <many-to-one name="Parent" column="PARENT_ID" class="Ticket" foreign-key="true" cascade="none" />
+    </subclass>
+    
+    <subclass name="PrerecordTicket" discriminator-value="20" dynamic-update="false" select-before-update="true">
+      <property name="PortalId" column="PORTAL_ID"/>
+      <property name="RecordDate" column="REC_DATE"/>
+      <property name="RecordStart" column="REC_START" />
+      <property name="RecordEnd" column="REC_END" />
+      <property name="CallNumberBefore" formula="(SELECT COUNT(*) FROM EQ_PROCESS P WHERE P.TICKET_ID=ID AND P.TICKET_STATUS_ID=20 AND P.INSERTED &lt; TO_DATE(TRUNC(REC_DATE)) + (1/1440)*REC_START)" type="Int32" update="false" insert="false" lazy="true"/>
+      <property name="CallNumberAfter" formula="(SELECT COUNT(*) FROM EQ_PROCESS P WHERE P.TICKET_ID=ID AND P.TICKET_STATUS_ID=20 AND P.INSERTED &gt;= TO_DATE(TRUNC(REC_DATE)) + (1/1440)*REC_START)" type="Int32" update="false" insert="false" lazy="true"/>
+    </subclass>
+  </class>
+</hibernate-mapping>

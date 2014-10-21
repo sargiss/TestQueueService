@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" assembly="EQ.Domain.v2" namespace="EQ.Domain.v2">
+  <class name="Timetable" table="EQ_TIMETABLE" xmlns="urn:nhibernate-mapping-2.2" dynamic-update="false" select-before-update="true">
+    <id name="Id" column="Id" type="Int64" unsaved-value="0">
+      <generator class="sequence">
+        <param name="sequence">TIMETABLE_SEQ</param>
+      </generator>
+    </id>
+    <discriminator column="TYPE_ID"/>
+    <property name="TimeStart" column="TIME_START" not-null="true"/>
+    <property name="TimeEnd" column="TIME_END" not-null="true"/>
+    <property name="ResourceId" column="RESOURCE_ID" not-null="true"/>
+    <many-to-one name="Queue" column="QUEUE_ID" class="Queue" foreign-key="true" not-null="true" cascade="none" />
+
+    <subclass name="CommonTimetable" discriminator-value="10" dynamic-update="false" select-before-update="true">
+      <property name="Day" column="DAY_NUM" not-null="true"/>
+    </subclass>
+    <subclass name="IndividualTimetable" discriminator-value="20" dynamic-update="false" select-before-update="true">
+      <property name="DateStart" column="DATE_START" not-null="true"/>
+      <property name="DateEnd" column="DATE_END" not-null="true"/>
+    </subclass>
+  </class>
+</hibernate-mapping>
