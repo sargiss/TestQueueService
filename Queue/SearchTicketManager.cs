@@ -13,12 +13,12 @@ using EQ.Domain.v2;
 using NHibernate.SqlCommand;
 
 
-namespace EQ.Core.Operator
+namespace Queue
 {
     /// <summary>
     /// Менеджер поиска талонов в очередях
     /// </summary>
-    internal class SearchTicketManager : IDisposable
+    internal class SearchTicketManager : IQueryTicketManager, IDisposable
     {
         private int _callTimeBefore;
         private int _maxCallAttemptBefore;
@@ -42,14 +42,11 @@ namespace EQ.Core.Operator
             _maxCallAttemptAfter = maxCallAttemptAfter;
             _repeatCallInterval = repeatCallInterval;
             _repeatCallTimeout = new TimeSpan(0, 0, repeatCallTimeout);
-            OperatorSessionManager.SessionFree += new SessionEventHandler(GetNextTicket);
         }
 
-        private void GetNextTicket(string sessionKey)
+        public void QueryTicket(OperatorSession session)
         {
-            OperatorSession session = OperatorSessionManager.Instance.Get(sessionKey);
-            if (session != null && session.TicketId <= 0)
-            {
+
                 try
                 {
                     using (ISession s = SessionHelper.OpenSession())
@@ -86,7 +83,6 @@ namespace EQ.Core.Operator
                         return;
                     new Thread(WaitTicket).Start(sessionKey);
                 }
-            }
         }
 
         private void WaitTicket(object o)
