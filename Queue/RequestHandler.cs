@@ -12,7 +12,7 @@ namespace Queue
     {
         OperatorSessionManager _sessionMngr;
         TicketStateManager _ticketMngr;
-        QueryTicketServiceClient _queryTicketMngr;
+        SearchTicketServiceClient _queryTicketMngr;
 
         public RequestHandler()
         {
@@ -26,30 +26,47 @@ namespace Queue
 
         void _sessionMngr_SessionFree()
         {
-            _queryTicketMngr.QueryNextTicket();
+            _queryTicketMngr.StartQueringTicket();
         }
 
-        public void Process(OperatorSession session, OperatorSessionEventMsg msg)
+        public void Process(OperatorSessionEventMsg msg)
         {
-            switch(msg.Event)
+            var session = OperatorSessionManager.Instance.GetSession(msg.SessionId);
+
+            if (session != null)
             {
-                case SessionEventType.ConfirmCall:
-                    break;
-                case SessionEventType.Logout:
-                    _sessionMngr.Logout(session);
-                    break;
-                case SessionEventType.Query:
-                    break;
-                case SessionEventType.RedirectTicket:
-                    break;
-                case SessionEventType.SkipTicket:
-                    _sessionMngr.SkipTicketByOperator(session);
-                    break;
-                case SessionEventType.ChangeState:
-                    ChangeSessionState(session, msg);
-                    break;
-                default:
-                    throw new Exception();
+                switch (msg.Event)
+                {
+                    case SessionEventType.ConfirmCall:
+                        break;
+                    case SessionEventType.Logout:
+                        _sessionMngr.Logout(session);
+                        break;
+                    case SessionEventType.Query:
+                        _queryTicketMngr.StartQueringTicket();
+                        break;
+                    case SessionEventType.RedirectTicket:
+                        break;
+                    case SessionEventType.SkipTicket:
+                        _sessionMngr.SkipTicketByOperator(session);
+                        break;
+                    case SessionEventType.ChangeState:
+                        ChangeSessionState(session, msg);
+                        break;
+                    default:
+                        throw new Exception();
+                }
+            }
+            else
+            {
+                switch(msg.Event)
+                {
+                    case SessionEventType.Query:
+                        _queryTicketMngr.FreeTicket();
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -58,5 +75,6 @@ namespace Queue
             var status = (Status)msg.OptionalParam;
             _sessionMngr.ChangeState(status, session);
         }
+
     }
 }

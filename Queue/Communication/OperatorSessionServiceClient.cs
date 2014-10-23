@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Queue.Dto
+namespace Queue.Communication
 {
-    class QueryTicketMsg
+    class OperatorSessionServiceClient
     {
-        public string SessionKey { get; set; }
+
     }
 }

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Queue.Dto
+namespace Queue
 {
-    class QueryTicketMsg
+    interface IHandlerCommand
     {
-        public string SessionKey { get; set; }
+        void Execute();
+        void Cancel();
     }
 }

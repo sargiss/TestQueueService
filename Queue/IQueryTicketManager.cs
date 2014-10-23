@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Queue
 {
-    interface IQueryTicketManager
+    interface ISearchTicketManager
     {
+        long QueryTicket(OperatorSession session);
+        void LockTicket(long ticketId);
+        void ReleaseTicket(long ticketId);
     }
 }

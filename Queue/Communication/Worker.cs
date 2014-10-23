@@ -53,12 +53,7 @@ namespace Queue
         {
             var request = JsonConvert.DeserializeObject<OperatorSessionEventMsg>(msg.BodyToString());
 
-            var session = OperatorSessionManager.Instance.GetSession(request.SessionId);
-
-            if (session == null)
-                return;
-
-            new RequestHandler().Process(session, request);
+            new RequestHandler().Process(request);
         }
     }
 }

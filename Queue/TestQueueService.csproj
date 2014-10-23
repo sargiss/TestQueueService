@@ -36,15 +36,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="NetMQ">
       <HintPath>..\packages\NetMQ.3.3.0.10\lib\net40\NetMQ.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.4.0.1.4000\lib\net40\NHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,25 +57,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dto\QueryTicketMsg.cs" />
-    <Compile Include="Dto\TabloMsg.cs" />
-    <Compile Include="QueryTicketServiceClient.cs" />
-    <Compile Include="Client.cs" />
+    <Compile Include="Communication\Client.cs" />
+    <Compile Include="Communication\ClientWrapper.cs" />
+    <Compile Include="Communication\ConnectionPool.cs" />
+    <Compile Include="Communication\Dto\QueryTicketMsg.cs" />
+    <Compile Include="Communication\Dto\TabloMsg.cs" />
+    <Compile Include="Communication\IServiceClient.cs" />
+    <Compile Include="Communication\OperatorSessionServiceClient.cs" />
+    <Compile Include="Communication\SearchTicketServiceClient.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="OperatorSessionServer.cs" />
-    <Compile Include="Dto\SessionEventType.cs" />
+    <Compile Include="Communication\OperatorSessionServiceBroker.cs" />
+    <Compile Include="Communication\Dto\SessionEventType.cs" />
+    <Compile Include="IHandlerCommand.cs" />
+    <Compile Include="IQueryTicketManager.cs" />
+    <Compile Include="OperatorSession.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Dto\OperatorSessionEventMsg.cs" />
+    <Compile Include="Communication\Dto\OperatorSessionEventMsg.cs" />
     <Compile Include="OperatorSessionManager.cs" />
-    <Compile Include="QueryTicketServer.cs" />
+    <Compile Include="Communication\SearchTicketServiceWorker.cs" />
     <Compile Include="RequestHandler.cs" />
+    <Compile Include="SearchTicketManager.cs" />
+    <Compile Include="Status.cs" />
     <Compile Include="StopSignal.cs" />
-    <Compile Include="TabloServiceClient.cs" />
-    <Compile Include="TicketStateManager.cs" />
-    <Compile Include="Worker.cs" />
-    <Compile Include="ZMessage.cs" />
-    <Compile Include="ZMessageSessioned.cs" />
+    <Compile Include="Communication\TabloServiceClient.cs" />
+    <Compile Include="Communication\TicketStateManager.cs" />
+    <Compile Include="Communication\Worker.cs" />
+    <Compile Include="Communication\ZMessage.cs" />
+    <Compile Include="Communication\ZMessageSessioned.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -8,13 +8,13 @@ using Newtonsoft.Json;
 
 namespace Queue
 {
-    class OperatorSessionServer
+    class OperatorSessionServiceBroker
     {
         private StopSignal _signal;
         private Dictionary<string, Queue<ZMessageSessioned>> _sessionCmds = 
             new Dictionary<string,Queue<ZMessageSessioned>>();
 
-        public OperatorSessionServer(StopSignal signal)
+        public OperatorSessionServiceBroker(StopSignal signal)
         {
             _signal = signal;
         }

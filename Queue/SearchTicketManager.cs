@@ -18,7 +18,7 @@ namespace Queue
     /// <summary>
     /// Менеджер поиска талонов в очередях
     /// </summary>
-    internal class SearchTicketManager : IQueryTicketManager, IDisposable
+    internal class SearchTicketManager : ISearchTicketManager, IDisposable
     {
         private int _callTimeBefore;
         private int _maxCallAttemptBefore;
@@ -53,19 +53,13 @@ namespace Queue
                     {
                         if (session.Status != Status.Free)
                             return;
-                        Ticket ticket = null;
-                        lock (padlock)
-                        {
-                            ticket = searchTicketForWindow(s, session.Window.Id);
-                        }
+                        Ticket ticket = searchTicketForWindow(s, session.Window.Id);
+                        
                         if (ticket != null)
                         {
                             if (session.Status != Status.Free)
                                 return;
                             LockTicketManager.Instance.Add(ticket.Id); // Оченя важный момент!!!
-                            Log.GetLog(typeof(SearchTicketManager)).InfoFormat("Вызов клиента c талоном {0}, ticketId={1} windowId={2} sessionKey={3}", ticket.Number, ticket.Id, session.Window.Id, sessionKey);
-                            EQ.External.Domain.Ticket ext_ticket = EQ.Core.Common.Transform.transform(ticket);
-                            OperatorSessionManager.Instance.CallClient(sessionKey, ext_ticket);
                         }
                         else
                         {
