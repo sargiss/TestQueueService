@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Queue.Communication.Dto
+namespace Queue
 {
-    class QueryTicketMsg
+    class IncorrectOperatorAction: Exception
     {
-        public string SessionKey { get; set; }
     }
 }

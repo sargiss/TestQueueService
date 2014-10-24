@@ -4,21 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
-using Queue.Dto;
+using Queue.Communication.Dto;
 
-namespace Queue
+namespace Queue.Communication
 {
-    class SearchTicketServiceClient: IDisposable
+    class SearchTicketServiceClient: IServiceClient
     {
         NetMQContext _context;
         NetMQSocket _client;
-
-        public SearchTicketServiceClient()
-        {
-            _context = NetMQContext.Create();
-            _client = _context.CreateRequestSocket();
-            _client.Connect(Config.QueryServerAddr);
-        }
 
         public void StartQueringTicket()
         {
@@ -26,23 +19,36 @@ namespace Queue
             Request(query);
         }
 
-        public void FreeTicket()
+        public void UnassignTicket()
         {
             var query = new QueryTicketMsg();
             Request(query);
-        }
-
-        public void Dispose()
-        {
-            _client.Dispose();
-            _context.Dispose();
         }
 
         private void Request(QueryTicketMsg query)
         {
             var msg = new ZMessage(query);
             msg.Send(_client);
-            msg.Receive(_client);
+        }
+
+        public void Connect()
+        {
+            _context = NetMQContext.Create();
+            _client = _context.CreatePublisherSocket();
+            _client.Connect(Config.QueryServerAddr);
+            IsConnected = true;
+        }
+
+        public void Close()
+        {
+            _client.Dispose();
+            _context.Dispose();
+        }
+
+        public bool IsConnected
+        {
+            get;
+            private set;
         }
     }
 }

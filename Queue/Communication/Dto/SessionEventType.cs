@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Queue.Dto
+namespace Queue.Communication.Dto
 {
     public enum SessionEventType
     {
         ChangeState,
         SkipTicket,
         RedirectTicket,
-        Query,
+        AssignTicket,
         Logout,
         ConfirmCall
     }

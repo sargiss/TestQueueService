@@ -5,13 +5,18 @@ using System.Text;
 using System.Threading;
 using NetMQ;
 using Newtonsoft.Json;
-using Queue.Dto;
+using Queue.Communication.Dto;
 
 namespace Queue
 {
     class Worker
     {
-        OperatorSessionManager _sessionManager= new OperatorSessionManager();
+        RequestHandler _handler;
+
+        public Worker(RequestHandler handler)
+        {
+            _handler = handler;
+        }
 
         public void Do()
         {
@@ -29,7 +34,6 @@ namespace Queue
                         
                         var addr = Encoding.Unicode.GetString(msg.Address);
                         Console.WriteLine("Worker: get msg from " + addr);
-                        //Console.WriteLine("Worker: body=" + msg.BodyToString());
 
                         if (msg.BodyToString() == "STOP")
                         {
@@ -51,9 +55,10 @@ namespace Queue
 
         private void HandleRequest(ZMessage msg)
         {
-            var request = JsonConvert.DeserializeObject<OperatorSessionEventMsg>(msg.BodyToString());
+            var body = msg.BodyToString();
+            var request = JsonConvert.DeserializeObject<OperatorSessionEventMsg>(body);
 
-            new RequestHandler().Process(request);
+            _handler.Process(request);
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-using EQ.Core.Operator;
 
 namespace Queue
 {
@@ -62,7 +61,7 @@ namespace Queue
         {
             if (session != null && session.TicketId > 0)
             {
-                var status = (session.Status == EQ.Core.Operator.Status.Busy ? TicketStatus.Close : TicketStatus.Open);
+                var status = (session.Status == SessionStatus.Busy ? TicketStatus.Close : TicketStatus.Open);
                 changeTicketStatus(session.TicketId, status, session.SessionKey);
                 //LockTicketManager.Instance.Remove(session.TicketId);
             }

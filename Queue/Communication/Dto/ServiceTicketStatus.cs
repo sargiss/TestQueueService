@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Queue
+namespace Queue.Communication.Dto
 {
-    public enum  Status
+    public enum ServiceTicketStatus
     {
-        Free,
-        Busy,
-        Pause
+        Calling,
+        Process,
+        Cancel
     }
 }

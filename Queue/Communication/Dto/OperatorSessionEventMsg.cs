@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Queue.OperatorSession;
 
-namespace Queue.Dto
+namespace Queue.Communication.Dto
 {
-    class OperatorSessionEventMsg
+    public class OperatorSessionEventMsg
     {
         public string SessionId { get; set; }
         public SessionEventType Event { get; set; }

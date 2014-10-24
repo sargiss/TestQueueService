@@ -8,8 +8,8 @@ namespace Queue.Communication
 {
     class ConnectionPool
     {
-        private Dictionary<Type, Queue<IServiceClient>> _freeClients;
-        private LinkedList<IServiceClient> _allClients;
+        private Dictionary<Type, Queue<IServiceClient>> _freeClients = new Dictionary<Type,Queue<IServiceClient>>();
+        private LinkedList<IServiceClient> _allClients = new LinkedList<IServiceClient>();
 
         public IEnumerable<T> CreateClients<T>(int count) where T: IServiceClient, new()
         {
@@ -21,7 +21,7 @@ namespace Queue.Communication
             var type = typeof(T);
             if (!_freeClients.ContainsKey(type))
                 _freeClients[type] = new Queue<IServiceClient>();
-            var serviceClient = _freeClients[type].Dequeue();
+            var serviceClient = _freeClients[type].Count > 0 ? _freeClients[type].Dequeue() : null;
             if (serviceClient == null)
             {
                 serviceClient = new T();

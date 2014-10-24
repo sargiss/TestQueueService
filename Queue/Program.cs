@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Queue.Communication;
+using Queue.Communication.Dto;
 
 namespace Queue
 {
@@ -12,17 +14,71 @@ namespace Queue
         {
             var signal = new StopSignal();
 
-            var server = new OperatorSessionServer(signal);
-            Task.Run(new Action(server.Do));
+            var server = new OperatorSessionServiceBroker(signal);
 
-            for (var i = 0; i < 2; i++)
+            Task.Run(new Action(server.Do));
+            Task.Run(new Action(new SearchTicketServiceWorker().Do));
+
+            var sm = new OperatorSessionManager();
+            var cp = new ConnectionPool();
+            var handler = new RequestHandler(sm, new TicketStateManager(), cp);
+
+            for (var i = 0; i < 5; i++)
             {
-                Task.Run(new Action(new Worker().Do));
+                Task.Run(new Action(new Worker(handler).Do));
             }
 
-            for (var i = 0; i < 8; i++)
+            for (var i = 0; i < 1; i++)
             {
-                Task.Run(new Action(new Client(signal, "session" + i/2).Do));
+                Task.Run(new Action(() =>
+                {
+                    var sessionId = sm.Login("u", "p");
+                    for (var c = 0; c < 10; c++)
+                    {
+                        using (var client = cp.GetClient<OperatorSessionServiceClient>())
+                        {
+                            client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
+                            {
+                                Event = SessionEventType.ChangeState,
+                                SessionId = sessionId,
+                                OptionalParam = SessionStatus.Free
+                            });
+
+                            while (sm.GetSession(sessionId).TicketId == 0) { }
+
+                            client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
+                            {
+                                Event = SessionEventType.ConfirmCall,
+                                SessionId = sessionId
+                            });
+
+                            client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
+                            {
+                                Event = SessionEventType.ChangeState,
+                                SessionId = sessionId,
+                                OptionalParam = SessionStatus.Busy
+                            });
+
+                            client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
+                            {
+                                Event = SessionEventType.ChangeState,
+                                SessionId = sessionId,
+                                OptionalParam = SessionStatus.Free
+                            });
+
+
+                        }
+
+                    }
+                    using (var client = cp.GetClient<OperatorSessionServiceClient>())
+                    {
+                        client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
+                    {
+                        Event = SessionEventType.Logout,
+                        SessionId = sessionId
+                    });
+                    }
+                }));
             }
 
             char k = 'a';

@@ -10,15 +10,24 @@ namespace Queue
     {
         Dictionary<string, OperatorSession> _sessions = new Dictionary<string, OperatorSession>();
 
-        public event Action TicketClose;
-        public event Action SessionFree;
-        public event Action SessionPause;
-        public event Action SessionBusy;
-        public event Action SessionDestroy;
-        public event Action TicketSkipped;
-        public event Action TicketMissed;
+        public event Action<OperatorSession> TicketClose;
+        public event Action<OperatorSession> SessionFree;
+        public event Action<OperatorSession> SessionPause;
+        public event Action<OperatorSession> SessionBusy;
+        public event Action<OperatorSession> SessionDestroy;
+        public event Action<OperatorSession> TicketSkipped;
+        public event Action<OperatorSession> TicketMissed;
 
-        public static OperatorSessionManager Instance { get; }
+        public OperatorSessionManager()
+        {
+            SessionFree += OperatorSessionManager_SessionFree;
+            SessionPause += OperatorSessionManager_SessionFree;
+        }
+
+        void OperatorSessionManager_SessionFree(OperatorSession obj)
+        {
+            obj.TicketId = 0;
+        }
 
         public string Login(string user, string password)
         {
@@ -27,48 +36,59 @@ namespace Queue
             return key;
         }
 
-        public OperatorSession GetSession(string SessionKey)
+        public OperatorSession GetSession(string sessionKey, bool throwException = false)
         {
-            return null;
+            if (!_sessions.ContainsKey(sessionKey))
+            {
+                if (throwException)
+                    throw new Exception("Can not find session specified by sessionKey=" + sessionKey);
+                else
+                    return null;
+            }
+            return _sessions[sessionKey];
         }
 
         public void Logout(OperatorSession session)
         {
+            OperatorSessionManager_SessionFree(session);
             _sessions.Remove(session.SessionKey);
-            SessionDestroy();
+            SessionDestroy(session);
         }
 
-        public void ChangeState(Status status, OperatorSession sessionInfo)
+        public void ChangeState(SessionStatus status, OperatorSession sessionInfo)
         {
             var currentStatus = sessionInfo.Status;
             if (status == currentStatus)
                 return;
 
+            if (currentStatus == SessionStatus.NoDefined && status != SessionStatus.Free)
+                throw new IncorrectOperatorAction();
+
             switch (status)
             {
-                case Status.Free:
-                    if (currentStatus == Status.Busy)
+                case SessionStatus.Free:
+                    if (currentStatus == SessionStatus.Busy)
                     {
-                        TicketClose();
+                        TicketClose(sessionInfo);
                     }
-                    SessionFree();
+                    SessionFree(sessionInfo);
                     break;
-                case Status.Busy:
-                    if (currentStatus == Status.Free)
+                case SessionStatus.Busy:
+                    if (currentStatus == SessionStatus.Free)
                     {
-                        SessionBusy();
+                        SessionBusy(sessionInfo);
                     }
                     else
                     {
-                        throw new Exception("Incorrect status");
+                        throw new IncorrectOperatorAction();
                     }
                     break;
-                case Status.Pause:
-                    if (currentStatus == Status.Busy)
+                case SessionStatus.Pause:
+                    if (currentStatus == SessionStatus.Busy)
                     {
-                        TicketClose();
+                        TicketClose(sessionInfo);
                     }
-                    SessionPause();
+                    SessionPause(sessionInfo);
                     break;
                 default:
                     throw new Exception("Incorrect status");
@@ -79,14 +99,18 @@ namespace Queue
 
         public void SkipTicketByOperator(OperatorSession session)
         {
-            TicketSkipped();
-            SessionFree();
+            if (session.Status != SessionStatus.Free)
+                throw new IncorrectOperatorAction();
+            TicketSkipped(session);
+            SessionFree(session);
         }
 
         public void MissedByCustomer(OperatorSession session)
         {
-            TicketMissed();
-            SessionFree();
+            if (session.Status != SessionStatus.Free)
+                throw new IncorrectOperatorAction();
+            TicketMissed(session);
+            SessionFree(session);
         }
     }
 }

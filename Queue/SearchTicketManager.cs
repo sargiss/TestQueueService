@@ -7,8 +7,6 @@ using log4net;
 using NHibernate;
 using NHibernate.Criterion;
 
-using EQ.Core.Common;
-using EQ.DAL.v1;
 using EQ.Domain.v2;
 using NHibernate.SqlCommand;
 
@@ -18,7 +16,7 @@ namespace Queue
     /// <summary>
     /// Менеджер поиска талонов в очередях
     /// </summary>
-    internal class SearchTicketManager : ISearchTicketManager, IDisposable
+    internal class SearchTicketManager : ISearchTicketManager
     {
         private int _callTimeBefore;
         private int _maxCallAttemptBefore;
@@ -44,26 +42,26 @@ namespace Queue
             _repeatCallTimeout = new TimeSpan(0, 0, repeatCallTimeout);
         }
 
-        public void QueryTicket(OperatorSession session)
+        /*public void QueryTicket(OperatorSession session)
         {
 
                 try
                 {
                     using (ISession s = SessionHelper.OpenSession())
                     {
-                        if (session.Status != Status.Free)
+                        if (session.Status != SessionStatus.Free)
                             return;
                         Ticket ticket = searchTicketForWindow(s, session.Window.Id);
                         
                         if (ticket != null)
                         {
-                            if (session.Status != Status.Free)
+                            if (session.Status != SessionStatus.Free)
                                 return;
                             LockTicketManager.Instance.Add(ticket.Id); // Оченя важный момент!!!
                         }
                         else
                         {
-                            if (session.Status != Status.Free)
+                            if (session.Status != SessionStatus.Free)
                                 return;
                             Log.GetLog(typeof(SearchTicketManager)).InfoFormat("Нет талонов в очереди для окна {0}, windowId={1} sessionKey={2}", session.Window.Name, session.Window.Id, session.SessionKey);
                             new Thread(WaitTicket).Start(sessionKey);
@@ -73,7 +71,7 @@ namespace Queue
                 catch (Exception ex)
                 {
                     Log.GetLog(typeof(SearchTicketManager)).Error(ex.Message, ex);
-                    if (session.Status != Status.Free)
+                    if (session.Status != SessionStatus.Free)
                         return;
                     new Thread(WaitTicket).Start(sessionKey);
                 }
@@ -90,12 +88,6 @@ namespace Queue
                 GetNextTicket(sessionKey);
             }
         }
-
-        public void Dispose()
-        {
-            OperatorSessionManager.SessionFree -= new SessionEventHandler(GetNextTicket);
-        }
-
 
         Dictionary<long, IList<QueueInWindow>> queueOnWindows = new Dictionary<long, IList<QueueInWindow>>();
         /// <summary>
@@ -257,6 +249,23 @@ namespace Queue
             }
             
             return null;
+        }
+         * */
+        long k = 1;
+        public long QueryTicket(OperatorSession session)
+        {
+            Thread.Sleep(3000);
+            return k++;
+        }
+
+        public void LockTicket(long ticketId)
+        {
+            Thread.Sleep(2000);
+        }
+
+        public void ReleaseTicket(long ticketId)
+        {
+            Thread.Sleep(2000);
         }
     }
 }

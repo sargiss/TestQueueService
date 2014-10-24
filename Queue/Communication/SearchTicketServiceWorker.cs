@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using NetMQ;
 using Newtonsoft.Json;
-using Queue.Dto;
+using Queue.Communication.Dto;
 using System.Threading;
 
-namespace Queue
+namespace Queue.Communication
 {
     class SearchTicketServiceWorker
     {
@@ -16,22 +16,19 @@ namespace Queue
 
         private ISearchTicketManager _queryMngr;
         OperatorSessionManager _sessionMngr;
+        ConnectionPool _connectionPool;
 
         public void Do()
         {
             using(var context = NetMQContext.Create())
             {
-                using(NetMQSocket server = context.CreateResponseSocket(),
-                    client = context.CreateRequestSocket())
+                using(NetMQSocket server = context.CreateSubscriberSocket())
                 {
                     server.Bind(Config.QueryServerAddr);
-                    client.Connect(Config.ServerFrontendAddr);
 
                     while(true)
                     {
                         var msg = new ZMessage(server);
-                        server.SendMore(string.Empty);
-                        server.Send("OK");
 
                         var queryMsg = JsonConvert.DeserializeObject<QueryTicketMsg>(msg.BodyToString());
                         Process(queryMsg.SessionKey);
@@ -49,6 +46,15 @@ namespace Queue
                 if (ticketId > 0)
                 {
                     _queryMngr.LockTicket(ticketId);
+                    using(var client = _connectionPool.GetClient<OperatorSessionServiceClient>())
+                    {
+                        client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
+                        {
+                            SessionId = sessionKey,
+                            Event = SessionEventType.AssignTicket,
+                            OptionalParam = ticketId
+                        });
+                    }
                 }
                 else
                 {
@@ -59,12 +65,15 @@ namespace Queue
                          {
                              timers.Remove(t);
                          }
-                         using (var client = new SearchTicketServiceClient())
+                         using (var client = _connectionPool.GetClient<SearchTicketServiceClient>())
                          {
-                             client.StartQueringTicket();
+                             client.Instance.StartQueringTicket();
                          }
                      }), null, 2000, Timeout.Infinite);
-                    timers.AddLast(t);
+                    lock (timers)
+                    {
+                        timers.AddLast(t);
+                    }
                 }
             }
         }

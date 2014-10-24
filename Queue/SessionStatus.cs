@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Queue
 {
-    interface IHandlerCommand
+    public enum  SessionStatus
     {
-        void Execute();
-        void Cancel();
+        NoDefined,
+        Free,
+        Busy,
+        Pause
     }
 }

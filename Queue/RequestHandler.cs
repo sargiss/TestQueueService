@@ -3,47 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Queue.Dto;
-using EQ.Core.Operator;
+using Queue.Communication.Dto;
+using Queue.Communication;
 
 namespace Queue
 {
-    class RequestHandler
+    class RequestHandler: IDisposable
     {
         OperatorSessionManager _sessionMngr;
         TicketStateManager _ticketMngr;
-        SearchTicketServiceClient _queryTicketMngr;
+        ClientWrapper<SearchTicketServiceClient> _queryService;
+        ClientWrapper<TabloServiceClient> _tabloService;
 
-        public RequestHandler()
+        public RequestHandler(OperatorSessionManager sessionManager, TicketStateManager ticketManager, ConnectionPool connectionPool)
         {
-            _sessionMngr.TicketClose += () => _ticketMngr.TicketClose(null, 0);
-            _sessionMngr.SessionDestroy += () => _ticketMngr.TicketCancel(null);
-            _sessionMngr.TicketSkipped += () => _ticketMngr.TicketPass(null, 0);
-            _sessionMngr.TicketMissed += () => { };
-            _sessionMngr.SessionBusy += () => _ticketMngr.TicketProcess(null, 0);
+            _sessionMngr = sessionManager;
+            _ticketMngr = ticketManager;
+
+            _queryService = connectionPool.GetClient<SearchTicketServiceClient>();
+            _tabloService = connectionPool.GetClient<TabloServiceClient>();
+
+            _sessionMngr.TicketClose += _sessionMngr_TicketClose;
+            _sessionMngr.SessionDestroy += _sessionMngr_SessionDestroy;
+            _sessionMngr.TicketSkipped += _sessionMngr_TicketSkipped;
+            _sessionMngr.TicketMissed += _sessionMngr_TicketMissed;
+            _sessionMngr.SessionBusy += _sessionMngr_SessionBusy;
             _sessionMngr.SessionFree += _sessionMngr_SessionFree;
-        }
-
-        void _sessionMngr_SessionFree()
-        {
-            _queryTicketMngr.StartQueringTicket();
         }
 
         public void Process(OperatorSessionEventMsg msg)
         {
-            var session = OperatorSessionManager.Instance.GetSession(msg.SessionId);
+            var session = _sessionMngr.GetSession(msg.SessionId);
 
             if (session != null)
             {
                 switch (msg.Event)
                 {
                     case SessionEventType.ConfirmCall:
+                        if (session.Status != SessionStatus.Free)
+                            throw new IncorrectOperatorAction();
+                        _ticketMngr.TicketCalled(session.SessionKey, session.TicketId);
+                        _tabloService.Instance.UpdateTablo(session, Communication.Dto.ServiceTicketStatus.Calling);
                         break;
                     case SessionEventType.Logout:
                         _sessionMngr.Logout(session);
                         break;
-                    case SessionEventType.Query:
-                        _queryTicketMngr.StartQueringTicket();
+                    case SessionEventType.AssignTicket:
+                        var ticketId = (long)msg.OptionalParam;
+                        session.TicketId = ticketId;
                         break;
                     case SessionEventType.RedirectTicket:
                         break;
@@ -51,18 +58,19 @@ namespace Queue
                         _sessionMngr.SkipTicketByOperator(session);
                         break;
                     case SessionEventType.ChangeState:
-                        ChangeSessionState(session, msg);
+                        var status = (SessionStatus)Enum.Parse(typeof(SessionStatus), msg.OptionalParam.ToString());
+                        _sessionMngr.ChangeState(status, session);
                         break;
                     default:
-                        throw new Exception();
+                        throw new IncorrectOperatorAction();
                 }
             }
             else
             {
                 switch(msg.Event)
                 {
-                    case SessionEventType.Query:
-                        _queryTicketMngr.FreeTicket();
+                    case SessionEventType.AssignTicket:
+                        _queryService.Instance.UnassignTicket();
                         break;
                     default:
                         break;
@@ -70,11 +78,44 @@ namespace Queue
             }
         }
 
-        void ChangeSessionState(OperatorSession session, OperatorSessionEventMsg msg)
+        public void Dispose()
         {
-            var status = (Status)msg.OptionalParam;
-            _sessionMngr.ChangeState(status, session);
+            _queryService.Dispose();
+            _tabloService.Dispose();
         }
 
+        void _sessionMngr_SessionFree(OperatorSession obj)
+        {
+            _queryService.Instance.StartQueringTicket();
+        }
+
+        void _sessionMngr_SessionBusy(OperatorSession obj)
+        {
+            _ticketMngr.TicketProcess(obj.SessionKey, obj.TicketId);
+            _tabloService.Instance.UpdateTablo(obj, Communication.Dto.ServiceTicketStatus.Process);
+        }
+
+        void _sessionMngr_TicketMissed(OperatorSession obj)
+        {
+            _tabloService.Instance.UpdateTablo(obj, Communication.Dto.ServiceTicketStatus.Cancel);
+        }
+
+        void _sessionMngr_TicketSkipped(OperatorSession obj)
+        {
+            _ticketMngr.TicketPass(obj.SessionKey, obj.TicketId);
+            _tabloService.Instance.UpdateTablo(obj, Communication.Dto.ServiceTicketStatus.Cancel);
+        }
+
+        void _sessionMngr_SessionDestroy(OperatorSession obj)
+        {
+            _ticketMngr.TicketCancel(obj);
+            _tabloService.Instance.UpdateTablo(obj, Communication.Dto.ServiceTicketStatus.Cancel);
+        }
+
+        void _sessionMngr_TicketClose(OperatorSession obj)
+        {
+            _ticketMngr.TicketClose(obj.SessionKey, obj.TicketId);
+            _tabloService.Instance.UpdateTablo(obj, Communication.Dto.ServiceTicketStatus.Cancel);
+        }
     }
 }

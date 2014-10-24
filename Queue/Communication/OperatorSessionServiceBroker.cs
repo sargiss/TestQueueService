@@ -12,7 +12,7 @@ namespace Queue
     {
         private StopSignal _signal;
         private Dictionary<string, Queue<ZMessageSessioned>> _sessionCmds = 
-            new Dictionary<string,Queue<ZMessageSessioned>>();
+            new Dictionary<string, Queue<ZMessageSessioned>>();
 
         public OperatorSessionServiceBroker(StopSignal signal)
         {
@@ -33,8 +33,6 @@ namespace Queue
                     {
                         var msg = new ZMessageSessioned(e.Socket);
 
-                    //    Console.WriteLine("Server frontend recieved: " + msg.SessionId);
-
                         if (!TryToPushMsg(msg))
                         {
                             PutTask(backend, msg);
@@ -46,8 +44,6 @@ namespace Queue
 
                         msg.Send(frontend);
 
-                      //  Console.WriteLine("Server backend recieved: session=" + msg.SessionId + "  addr=" + 
-                        //    Encoding.Unicode.GetString(msg.Address));
                         var next = TryToPullNextMsg(msg.SessionId);
                         if (next != null)
                         {
@@ -62,10 +58,6 @@ namespace Queue
 
                     _signal.WaitForStop();
                     poller.Stop(true);
-      
-                    backend.SendMore("addr");
-                    backend.SendMore("");
-                    backend.Send(Encoding.Unicode.GetBytes("STOP"));
                 }
             }
             Console.WriteLine("Server stopped!");
