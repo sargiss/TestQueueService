@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using NetMQ;
+using Queue.Common;
 
 namespace Queue
 {
@@ -18,7 +19,7 @@ namespace Queue
             Receive(NetMQSocket);
         }
 
-        public ZMessage(object body):this(body.ToString())
+        public ZMessage(object body):this(body.ToJson())
         { }
 
         public ZMessage(string body, Encoding encoding)

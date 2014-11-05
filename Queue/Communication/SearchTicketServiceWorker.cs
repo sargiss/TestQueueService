@@ -18,6 +18,15 @@ namespace Queue.Communication
         OperatorSessionManager _sessionMngr;
         ConnectionPool _connectionPool;
 
+        public SearchTicketServiceWorker(ISearchTicketManager searchManager, 
+            OperatorSessionManager sessionManager,
+            ConnectionPool connectionPool)
+        {
+            _queryMngr = searchManager;
+            _sessionMngr = sessionManager;
+            _connectionPool = connectionPool;
+        }
+
         public void Do()
         {
             using(var context = NetMQContext.Create())
@@ -25,20 +34,25 @@ namespace Queue.Communication
                 using(NetMQSocket server = context.CreateSubscriberSocket())
                 {
                     server.Bind(Config.QueryServerAddr);
+                    server.Subscribe("");
 
                     while(true)
                     {
                         var msg = new ZMessage(server);
-
-                        var queryMsg = JsonConvert.DeserializeObject<QueryTicketMsg>(msg.BodyToString());
-                        Process(queryMsg.SessionKey);
+                        var body = msg.BodyToString();
+                        var queryMsg = JsonConvert.DeserializeObject<QueryTicketMsg>(body);
+                        Process(queryMsg);
                     }
                 }
             }
         }
 
-        private void Process(string sessionKey)
+        long ii = 0;
+        private void Process(QueryTicketMsg msg)
         {
+            if (msg.SessionKey == null)
+                return;
+            var sessionKey = msg.SessionKey;
             var session = _sessionMngr.GetSession(sessionKey);
             if (session != null)
             {
@@ -46,7 +60,7 @@ namespace Queue.Communication
                 if (ticketId > 0)
                 {
                     _queryMngr.LockTicket(ticketId);
-                    using(var client = _connectionPool.GetClient<OperatorSessionServiceClient>())
+                    /*using(var client = _connectionPool.GetClient<OperatorSessionServiceClient>())
                     {
                         client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
                         {
@@ -54,7 +68,9 @@ namespace Queue.Communication
                             Event = SessionEventType.AssignTicket,
                             OptionalParam = ticketId
                         });
-                    }
+                    }*/
+                    session.TicketId = ticketId;
+                    Console.WriteLine("II=" + (++ii));
                 }
                 else
                 {
@@ -67,7 +83,7 @@ namespace Queue.Communication
                          }
                          using (var client = _connectionPool.GetClient<SearchTicketServiceClient>())
                          {
-                             client.Instance.StartQueringTicket();
+                             client.Instance.StartQueringTicket(session);
                          }
                      }), null, 2000, Timeout.Infinite);
                     lock (timers)

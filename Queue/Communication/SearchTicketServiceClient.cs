@@ -13,15 +13,21 @@ namespace Queue.Communication
         NetMQContext _context;
         NetMQSocket _client;
 
-        public void StartQueringTicket()
+        public void StartQueringTicket(OperatorSession session)
         {
-            var query = new QueryTicketMsg();
+            var query = new QueryTicketMsg()
+            {
+                SessionKey = session.SessionKey
+            };
             Request(query);
         }
 
-        public void UnassignTicket()
+        public void UnassignTicket(long ticketId)
         {
-            var query = new QueryTicketMsg();
+            var query = new QueryTicketMsg()
+                {
+                    TicketId = ticketId
+                };
             Request(query);
         }
 
@@ -29,6 +35,8 @@ namespace Queue.Communication
         {
             var msg = new ZMessage(query);
             msg.Send(_client);
+            //_client.SendMore(string.Empty);
+            //_client.Send("fuck");
         }
 
         public void Connect()

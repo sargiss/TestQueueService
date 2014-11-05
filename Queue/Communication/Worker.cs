@@ -31,9 +31,6 @@ namespace Queue
                     worker.ReceiveReady += (s, e) =>
                     {
                         var msg = new ZMessage(e.Socket);
-                        
-                        var addr = Encoding.Unicode.GetString(msg.Address);
-                        Console.WriteLine("Worker: get msg from " + addr);
 
                         if (msg.BodyToString() == "STOP")
                         {
@@ -43,7 +40,7 @@ namespace Queue
 
                         HandleRequest(msg);
 
-                        msg.StringToBody("OK-" + addr);
+                        msg.StringToBody("OK");
                         msg.Send(worker);
                     };
 

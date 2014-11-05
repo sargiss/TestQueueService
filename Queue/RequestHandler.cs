@@ -70,7 +70,7 @@ namespace Queue
                 switch(msg.Event)
                 {
                     case SessionEventType.AssignTicket:
-                        _queryService.Instance.UnassignTicket();
+                        _queryService.Instance.UnassignTicket((long)msg.OptionalParam);
                         break;
                     default:
                         break;
@@ -86,7 +86,7 @@ namespace Queue
 
         void _sessionMngr_SessionFree(OperatorSession obj)
         {
-            _queryService.Instance.StartQueringTicket();
+            _queryService.Instance.StartQueringTicket(obj);
         }
 
         void _sessionMngr_SessionBusy(OperatorSession obj)

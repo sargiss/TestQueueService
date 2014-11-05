@@ -11,16 +11,19 @@ namespace Queue.Communication
 {
     class OperatorSessionServiceClient : IServiceClient
     {
+        static long count = 0;
+
         Encoding _encoding = Encoding.Unicode;
         NetMQContext _context;
         NetMQSocket _client;
 
         public void Connect()
         {
+            count++;
             _context = NetMQContext.Create();
             _client = _context.CreateRequestSocket();
             _client.Connect(Config.ServerFrontendAddr);
-            _client.Options.Identity = _encoding.GetBytes("t_" + Thread.CurrentThread.ManagedThreadId.ToString());
+            _client.Options.Identity = _encoding.GetBytes("t_" + count + "_" + Thread.CurrentThread.ManagedThreadId.ToString());
             IsConnected = true;
         }
 
@@ -39,6 +42,7 @@ namespace Queue.Communication
         public void SendOperatorCommand(OperatorSessionEventMsg cmd)
         {
             var SessionId = cmd.SessionId;
+            _client.SendMore(string.Empty);
             _client.SendMore(_encoding.GetBytes(SessionId));
             _client.SendMore(string.Empty);
             _client.Send(_encoding.GetBytes(JsonConvert.SerializeObject(cmd)));

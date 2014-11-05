@@ -9,5 +9,6 @@ namespace Queue.Communication.Dto
     class QueryTicketMsg
     {
         public string SessionKey { get; set; }
+        public long TicketId { get; set; }
     }
 }

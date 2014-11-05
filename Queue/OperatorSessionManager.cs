@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Queue
 {
     class OperatorSessionManager
     {
-        Dictionary<string, OperatorSession> _sessions = new Dictionary<string, OperatorSession>();
+        ConcurrentDictionary<string, OperatorSession> _sessions = new ConcurrentDictionary<string, OperatorSession>();
 
         public event Action<OperatorSession> TicketClose;
         public event Action<OperatorSession> SessionFree;
@@ -32,7 +33,17 @@ namespace Queue
         public string Login(string user, string password)
         {
             var key = Guid.NewGuid().ToString();
-            _sessions.Add(key, new OperatorSession());
+            _sessions.TryAdd(key, new OperatorSession()
+                {
+                    SessionKey = key,
+                    Status = SessionStatus.NoDefined,
+                    TicketId = 0,
+                    Window = new OperatorWindow()
+                    {
+                        Id = 1,
+                        Number = user
+                    }
+                });
             return key;
         }
 
@@ -51,7 +62,8 @@ namespace Queue
         public void Logout(OperatorSession session)
         {
             OperatorSessionManager_SessionFree(session);
-            _sessions.Remove(session.SessionKey);
+            _sessions.TryRemove(session.SessionKey, out session);
+            Console.WriteLine("Remove: " + session.SessionKey);
             SessionDestroy(session);
         }
 

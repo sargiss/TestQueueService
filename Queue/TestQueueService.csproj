@@ -61,6 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ObjExtension.cs" />
     <Compile Include="Communication\ClientWrapper.cs" />
     <Compile Include="Communication\ConnectionPool.cs" />
     <Compile Include="Communication\Dto\QueryTicketMsg.cs" />

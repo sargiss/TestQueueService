@@ -254,18 +254,18 @@ namespace Queue
         long k = 1;
         public long QueryTicket(OperatorSession session)
         {
-            Thread.Sleep(3000);
+            Thread.Sleep(10);
             return k++;
         }
 
         public void LockTicket(long ticketId)
         {
-            Thread.Sleep(2000);
+            Thread.Sleep(5);
         }
 
         public void ReleaseTicket(long ticketId)
         {
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
         }
     }
 }
