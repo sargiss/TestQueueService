@@ -6,13 +6,15 @@ using System.Threading;
 using NetMQ;
 using Newtonsoft.Json;
 
-namespace Queue
+namespace Queue.Communication
 {
     class OperatorSessionServiceBroker
     {
         private StopSignal _signal;
-        private Dictionary<string, Queue<ZMessageSessioned>> _sessionCmds = 
-            new Dictionary<string, Queue<ZMessageSessioned>>();
+        private HashSet<string> _workers = new HashSet<string>();
+        private List<string> _waitingWorkers = new List<string>();
+        private NetMQSocket _broker;
+        private Queue<ZMessage> _requests = new Queue<ZMessage>();
 
         public OperatorSessionServiceBroker(StopSignal signal)
         {
@@ -23,38 +25,36 @@ namespace Queue
         {
             using (var context = NetMQContext.Create())
             {
-                using (NetMQSocket frontend = context.CreateRouterSocket(),
-                    backend = context.CreateDealerSocket())
+                using (_broker = context.CreateRouterSocket())
                 {
-                    frontend.Bind(Config.ServerFrontendAddr);
-                    backend.Bind(Config.ServerBackendAddr);
+                    _broker.Bind(Config.BrokerAddr);
 
-                    frontend.ReceiveReady += (s, e) =>
+                    _broker.ReceiveReady += (s, e) =>
                     {
-                        var msg = new ZMessageSessioned(e.Socket);
-                        if (msg.FrameCount != 6)
+                        var zmsg = new ZMessage(e.Socket);
+
+                        var address = zmsg.PopStr();
+                        var empty = zmsg.PopStr();
+                        var typeOfRequester = zmsg.PopStr();
+
+                        if (CommunicationPrimitives.IsClient(typeOfRequester))
                         {
-                            Console.WriteLine("ERROR!!!");
+                            ProcessClient(address, zmsg);
                         }
-                        if (!TryToPushMsg(msg))
+                        else
                         {
-                            PutTask(backend, msg);
+                            if (CommunicationPrimitives.IsWorker(typeOfRequester))
+                            {
+                                ProcessWorker(address, zmsg);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Incorrect type of requestor.");
+                            }
                         }
                     };
-                    backend.ReceiveReady += (s, e) =>
-                    {
-                        var msg = new ZMessageSessioned(e.Socket);
 
-                        msg.Send(frontend);
-
-                        var next = TryToPullNextMsg(msg.SessionId);
-                        if (next != null)
-                        {
-                            PutTask(backend, next);
-                        }
-                    };
-
-                    Poller poller = new Poller(new[] { frontend, backend });
+                    Poller poller = new Poller(new[] { _broker });
 
                     Action polling = poller.Start;
                     polling.BeginInvoke(new AsyncCallback(r => { }), null);
@@ -66,31 +66,88 @@ namespace Queue
             Console.WriteLine("Server stopped!");
         }
 
-        private bool TryToPushMsg(ZMessageSessioned cmd)
+        private void ProcessClient(string sender, ZMessage zmsg)
         {
-            if (_sessionCmds.ContainsKey(cmd.SessionId))
+            _requests.Enqueue(zmsg);
+            Dispatch();
+        }
+
+        private void ProcessWorker(string address, ZMessage zmsg)
+        {
+            var workerExists = _workers.Contains(address);
+
+            var cmd = zmsg.PopStr();
+
+            switch (cmd)
             {
-                _sessionCmds[cmd.SessionId].Enqueue(cmd);
-                return true;
+                case CommunicationPrimitives.Commands.READY:
+                    if (workerExists)
+                    {
+                        DeleteWorker(address, true);
+                    }
+                    else
+                    {
+                        _workers.Add(address);
+                        WaitingWorker(address);
+                    }
+                    break;
+                case CommunicationPrimitives.Commands.REPLY:
+                    if (workerExists)
+                    {
+                        zmsg.PushStr(CommunicationPrimitives.ClientTypeId);
+                        zmsg.Send(_broker);
+                        WaitingWorker(address);
+                    }
+                    else
+                    {
+                        DeleteWorker(address, true);
+                    }
+                    break;
+                case CommunicationPrimitives.Commands.DISCONNECT:
+                    DeleteWorker(address, false);
+                    break;
+                default:
+                    Console.WriteLine("Incorrect command:" + cmd);
+                    break;
             }
-            _sessionCmds[cmd.SessionId] = new Queue<ZMessageSessioned>();
-            return false;
         }
 
-        private ZMessageSessioned TryToPullNextMsg(string sessionId)
+        private void WaitingWorker(string address)
         {
-            if (_sessionCmds[sessionId].Count > 0)
+            _waitingWorkers.Add(address);
+            Dispatch();
+        }
+
+        private void DeleteWorker(string address, bool disconnect)
+        {
+            if (disconnect)
             {
-                return _sessionCmds[sessionId].Dequeue();
+                SendToWorker(address, CommunicationPrimitives.Commands.DISCONNECT, null);
             }
-            _sessionCmds.Remove(sessionId);
-            return null;
+            _workers.Remove(address);
+            _waitingWorkers.Remove(address);
         }
 
-        private void PutTask(NetMQSocket socket, ZMessage msg)
+        private void Dispatch()
         {
-            msg.Send(socket);
+            while(_waitingWorkers.Count > 0 && _requests.Count > 0)
+            {
+                var zmsg = _requests.Dequeue();
+                var address = _waitingWorkers[0];
+                _waitingWorkers.RemoveAt(0);
+                SendToWorker(address, CommunicationPrimitives.Commands.REQUEST, zmsg);
+            }
         }
 
+        private void SendToWorker(string address, string cmd, ZMessage zmsg)
+        {
+            if (zmsg == null)
+                zmsg = new ZMessage();
+            zmsg.PushStr(cmd);
+            zmsg.PushStr(CommunicationPrimitives.WorkerTypeId);
+            zmsg.PushStr(string.Empty);
+            zmsg.PushStr(address);
+            zmsg.Send(_broker);
+        }
     }
 }

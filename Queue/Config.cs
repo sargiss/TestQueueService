@@ -8,6 +8,7 @@ namespace Queue
 {
     class Config
     {
+        public static string BrokerAddr = "tcp://localhost:5565";
         public static string ServerBackendAddr = "tcp://localhost:5566";
         public static string ServerFrontendAddr = "tcp://localhost:5567";
         public static string QueryServerAddr = "tcp://localhost:5568";

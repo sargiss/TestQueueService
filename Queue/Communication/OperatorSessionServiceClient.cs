@@ -22,7 +22,7 @@ namespace Queue.Communication
             count++;
             _context = NetMQContext.Create();
             _client = _context.CreateRequestSocket();
-            _client.Connect(Config.ServerFrontendAddr);
+            _client.Connect(Config.BrokerAddr);
             _client.Options.Identity = _encoding.GetBytes("t_" + count + "_" + Thread.CurrentThread.ManagedThreadId.ToString());
             IsConnected = true;
         }
@@ -41,11 +41,9 @@ namespace Queue.Communication
 
         public void SendOperatorCommand(OperatorSessionEventMsg cmd)
         {
-            var SessionId = cmd.SessionId;
-            _client.SendMore(string.Empty);
-            _client.SendMore(_encoding.GetBytes(SessionId));
-            _client.SendMore(string.Empty);
-            _client.Send(_encoding.GetBytes(JsonConvert.SerializeObject(cmd)));
+            var zmsg = new ZMessage(JsonConvert.SerializeObject(cmd));
+            zmsg.PushStr(CommunicationPrimitives.ClientTypeId);
+            zmsg.Send(_client);
 
             var answer = new ZMessage(_client);
         }

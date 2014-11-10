@@ -46,17 +46,7 @@ namespace Queue
             {
                 var s = Encoding.Unicode.GetString(frame.Buffer);
                 frames.Insert(0, frame.Buffer);
-            }
-
-            return;
-            bool hasMore = false;
-           
-            do
-            {
-                var f = NetMQSocket.Receive(false, out hasMore);
-                frames.Insert(0, f);
-            } while (hasMore);
-            
+            }            
         }
 
         public void Send(NetMQSocket socket)
@@ -94,6 +84,16 @@ namespace Queue
         public void Push(byte[] data)
         {
             frames.Add(data);
+        }
+
+        public void PushStr(string str)
+        {
+            Push(encoding.GetBytes(str));
+        }
+
+        public string PopStr()
+        {
+            return encoding.GetString(Pop());
         }
 
         public void Wrap(byte[] address, byte[] delim)

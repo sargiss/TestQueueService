@@ -7,11 +7,12 @@ using NetMQ;
 using Newtonsoft.Json;
 using Queue.Communication.Dto;
 
-namespace Queue
+namespace Queue.Communication
 {
     class Worker
     {
         RequestHandler _handler;
+        NetMQSocket _worker;
 
         public Worker(RequestHandler handler)
         {
@@ -22,32 +23,41 @@ namespace Queue
         {
             using (var context = NetMQContext.Create())
             {
-                using (var worker = context.CreateResponseSocket())
+                using (ReconnectToBroker(context))
                 {
-                    worker.Connect(Config.ServerBackendAddr);
+                    _worker.Connect(Config.ServerBackendAddr);
 
-                    var poller = new Poller(new[] { worker });
+                    var poller = new Poller(new[] { _worker });
 
-                    worker.ReceiveReady += (s, e) =>
+                    _worker.ReceiveReady += (s, e) =>
                     {
-                        var msg = new ZMessage(e.Socket);
-
-                        if (msg.BodyToString() == "STOP")
-                        {
-                            poller.Stop();
-                            Console.WriteLine("Worker stopping");
-                        }
-
-                        HandleRequest(msg);
-
-                        msg.StringToBody("OK");
-                        msg.Send(worker);
+                        var zmsg = new ZMessage(e.Socket);
+                        HandleRequest(zmsg);
                     };
 
                     poller.Start();
                 }
             }
             Console.WriteLine("Worker stopped");
+        }
+
+        NetMQSocket ReconnectToBroker(NetMQContext ctx)
+        {
+            if (_worker != null)
+            {
+                _worker.Dispose();
+            }
+            _worker = ctx.CreateDealerSocket();
+            _worker.Connect(Config.BrokerAddr);
+
+            SendToBroker(CommunicationPrimitives.Commands.READY, null);
+
+            return _worker;
+        }
+
+        private void SendToBroker(string cmd, ZMessage zmsg)
+        {
+
         }
 
         private void HandleRequest(ZMessage msg)
