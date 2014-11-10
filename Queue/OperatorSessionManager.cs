@@ -63,7 +63,7 @@ namespace Queue
         {
             OperatorSessionManager_SessionFree(session);
             _sessions.TryRemove(session.SessionKey, out session);
-            Console.WriteLine("Remove: " + session.SessionKey);
+            //Console.WriteLine("Remove: " + session.SessionKey);
             SessionDestroy(session);
         }
 

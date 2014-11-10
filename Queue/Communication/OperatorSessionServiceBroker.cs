@@ -32,7 +32,10 @@ namespace Queue
                     frontend.ReceiveReady += (s, e) =>
                     {
                         var msg = new ZMessageSessioned(e.Socket);
-
+                        if (msg.FrameCount != 6)
+                        {
+                            Console.WriteLine("ERROR!!!");
+                        }
                         if (!TryToPushMsg(msg))
                         {
                             PutTask(backend, msg);

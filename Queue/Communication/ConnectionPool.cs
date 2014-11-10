@@ -19,20 +19,28 @@ namespace Queue.Communication
         public ClientWrapper<T> GetClient<T>() where T : IServiceClient, new()
         {
             var type = typeof(T);
-            if (!_freeClients.ContainsKey(type))
-                _freeClients[type] = new Queue<IServiceClient>();
-            var serviceClient = _freeClients[type].Count > 0 ? _freeClients[type].Dequeue() : null;
-            if (serviceClient == null)
+            IServiceClient serviceClient;
+            lock (_freeClients)
             {
-                serviceClient = new T();
-                _allClients.AddLast(serviceClient);
+                if (!_freeClients.ContainsKey(type))
+                    _freeClients[type] = new Queue<IServiceClient>();
+                serviceClient = _freeClients[type].Count > 0 ? _freeClients[type].Dequeue() : null;
+                if (serviceClient == null)
+                {
+                    serviceClient = new T();
+                    _allClients.AddLast(serviceClient);
+                }
             }
             return new ClientWrapper<T>(this, (T)serviceClient);
         }
 
         public void ReleaseClient<T>(T client) where T : IServiceClient
         {
-            _freeClients[typeof(T)].Enqueue(client);
+            lock (_freeClients)
+            {
+                _freeClients[typeof(T)].Enqueue(client);
+            }
+
         }
     }
 }

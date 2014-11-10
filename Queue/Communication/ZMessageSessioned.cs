@@ -16,5 +16,13 @@ namespace Queue
         {
             get { return encoding.GetString(frames[2]); }
         }
+
+        public string[] AllData
+        {
+            get
+            {
+                return frames.Select(f => encoding.GetString(f)).ToArray();
+            }
+        }
     }
 }

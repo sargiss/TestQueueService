@@ -50,7 +50,8 @@ namespace Queue
                     w.Start();
                     Console.WriteLine(" START");
                     var sessionId = sm.Login("u", "p");
-                    int count = 30;
+                    var start = DateTime.Now;
+                    int count = 800;
                     for (var c = 0; c < count; c++)
                     {
                         using (var client = cp.GetClient<OperatorSessionServiceClient>())
@@ -65,7 +66,7 @@ namespace Queue
                             });
                             t1 += w.Elapsed - e;
                             //Console.WriteLine(w.Elapsed + " Wait");
-                            while (sm.GetSession(sessionId).TicketId == 0) { }
+                            //while (sm.GetSession(sessionId).TicketId == 0) { }
                             //Console.WriteLine(w.Elapsed + " Call");
                             e = w.Elapsed;
                             client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
@@ -74,7 +75,7 @@ namespace Queue
                                 SessionId = sessionId
                             });
                             t2 += w.Elapsed - e;
-                            Thread.Sleep(r.Next(0, 50));
+                            Thread.Sleep(r.Next(0, 90));
 
                             e = w.Elapsed;
                             //Console.WriteLine(w.Elapsed + " Busy");
@@ -97,14 +98,17 @@ namespace Queue
                             SessionId = sessionId
                         });
                     }
-
+                    var end = DateTime.Now;
                     w.Stop();
+
                     var avr = w.Elapsed.Ticks / count;
                     t1 = new TimeSpan(t1.Ticks / count);
                     t2 = new TimeSpan(t2.Ticks / count);
                     t3 = new TimeSpan(t3.Ticks / count);
-                    Console.WriteLine(string.Format("{0} END: t1={1}, t2={2}, t3={3}", 
-                        new TimeSpan(avr), t1, t2, t3));
+                    //Console.WriteLine(string.Format("{0} END: t1={1}, t2={2}, t3={3}", 
+                      //  new TimeSpan(avr), t1, t2, t3));
+                    Console.WriteLine("{0} - {1}", start.ToString("hh:mm:ss.fff tt"),
+                        end.ToString("hh:mm:ss.fff tt"));
                 }));
             }
 

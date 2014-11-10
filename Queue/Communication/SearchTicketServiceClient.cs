@@ -33,8 +33,10 @@ namespace Queue.Communication
 
         private void Request(QueryTicketMsg query)
         {
+
+
             var msg = new ZMessage(query);
-            msg.Send(_client);
+            //msg.Send(_client);
             //_client.SendMore(string.Empty);
             //_client.Send("fuck");
         }
