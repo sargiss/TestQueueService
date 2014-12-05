@@ -8,6 +8,12 @@ namespace Queue.Communication
 {
     static class CommunicationPrimitives
     {
+        static Dictionary<string, TypeOfClient> map = new Dictionary<string, TypeOfClient>{
+            {ClientTypeId, TypeOfClient.Client},
+            {WorkerTypeId, TypeOfClient.Worker},
+            {TaskManagerTypeId, TypeOfClient.TaskManager}
+        };
+
         public static string ClientTypeId
         {
             get { return "client_id"; }
@@ -18,14 +24,14 @@ namespace Queue.Communication
             get { return "worker_id"; }
         }
 
-        public static bool IsClient(string id)
+        public static string TaskManagerTypeId
         {
-            return string.Compare(ClientTypeId, id) == 0;
+            get { return "tm_client_id"; }
         }
 
-        public static bool IsWorker(string id)
+        public static TypeOfClient GetTypeOfClient(string id)
         {
-            return string.Compare(WorkerTypeId, id) == 0;
+            return map[id];
         }
 
         public class Commands
@@ -36,5 +42,11 @@ namespace Queue.Communication
             public const string DISCONNECT = "disconnect_cmd";
         }
 
+        public enum TypeOfClient
+        {
+            Client,
+            Worker,
+            TaskManager
+        }
     }
 }

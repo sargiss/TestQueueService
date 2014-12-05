@@ -11,12 +11,12 @@ namespace Queue.Communication
         private Dictionary<Type, Queue<IServiceClient>> _freeClients = new Dictionary<Type,Queue<IServiceClient>>();
         private LinkedList<IServiceClient> _allClients = new LinkedList<IServiceClient>();
 
-        public IEnumerable<T> CreateClients<T>(int count) where T: IServiceClient, new()
+        /*public IEnumerable<T> CreateClients<T>(int count) where T: IServiceClient
         {
             return Enumerable.Range(0, count).Select(i => new T());
         }
 
-        public ClientWrapper<T> GetClient<T>() where T : IServiceClient, new()
+        public ClientWrapper<T> GetClient<T>() where T : IServiceClient
         {
             var type = typeof(T);
             IServiceClient serviceClient;
@@ -32,7 +32,7 @@ namespace Queue.Communication
                 }
             }
             return new ClientWrapper<T>(this, (T)serviceClient);
-        }
+        }*/
 
         public void ReleaseClient<T>(T client) where T : IServiceClient
         {

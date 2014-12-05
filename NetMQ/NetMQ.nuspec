@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <!--<licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>-->
+    <projectUrl>https://github.com/zeromq/netmq</projectUrl>
+    <!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+	  <releaseNotes>
+      Features:
+      * Buffer Pooling - Buffer pooling can be enabled to reduce the memory allocation.
+      * NetMQBeacon - Port of CZMQ beacon to NetMQ.
+      * Actor - Port of CZMQ Actor to NetMQ.
+      * XSub can send messages (other than subscribe or unsubscribe) to XPub (messages should not start with 0 or 1). Ported from libzmq.
+      * Encoding overload to all Send/Receive string methods.
+      * Pushing and popping numbers from NetMQMessage
+      * NetworkOrderBitsConveter to convert numbers to byte array and vice versa
+      * NetMQFrame implements GetHashCode and Equals
+
+      Bug Fixes:
+      * Disconnect and Unbind fixed
+      * Mono address in use bug - using ephemeral port for Signaler
+      * Stream Engine fix - ported multiple bug fixes from libzmq
+      * PGM High Frequency Bug
+      * Poller Exception Bug
+    </releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>ZeroMQ 0MQ CLRZMQ NetMQ Messaging ZMQ transport distributed</tags>
+  </metadata>
+</package>

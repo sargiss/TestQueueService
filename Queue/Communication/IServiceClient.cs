@@ -10,6 +10,5 @@ namespace Queue.Communication
     {
         void Connect();
         void Close();
-        bool IsConnected { get; }
     }
 }

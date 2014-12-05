@@ -81,10 +81,9 @@ namespace Queue.Communication
                          {
                              timers.Remove(t);
                          }
-                         using (var client = _connectionPool.GetClient<SearchTicketServiceClient>())
-                         {
-                             client.Instance.StartQueringTicket(session);
-                         }
+                         var client = new SearchTicketServiceClient();
+
+                         client.StartQueringTicket(session);
                      }), null, 2000, Timeout.Infinite);
                     lock (timers)
                     {

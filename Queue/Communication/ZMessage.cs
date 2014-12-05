@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using NetMQ;
 using Queue.Common;
 
@@ -74,6 +75,11 @@ namespace Queue
             frames.Insert(0, data);
         }
 
+        public void Append(string str)
+        {
+            Append(encoding.GetBytes(str));
+        }
+
         public byte[] Pop()
         {
             byte[] data = frames[frames.Count - 1];
@@ -86,7 +92,7 @@ namespace Queue
             frames.Add(data);
         }
 
-        public void PushStr(string str)
+        public void Push(string str)
         {
             Push(encoding.GetBytes(str));
         }
@@ -103,6 +109,11 @@ namespace Queue
                 frames.Add(delim);
             }
             frames.Add(address);
+        }
+
+        public void Wrap(string address)
+        {
+            Wrap(encoding.GetBytes(address), new byte[0]);
         }
 
         public byte[] Unwrap()
@@ -130,6 +141,19 @@ namespace Queue
         {
             get { return frames[0]; }
             set { frames[0] = value; }
+        }
+
+        public string[] AllData
+        {
+            get
+            {
+                return frames.Select(f => encoding.GetString(f)).ToArray();
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Join("\n", AllData);
         }
     }
 }

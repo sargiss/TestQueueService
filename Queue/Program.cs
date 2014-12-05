@@ -27,77 +27,113 @@ namespace Queue
 
             var server = new OperatorSessionServiceBroker(signal);
             Task.Run(new Action(server.Do));
+            //System.Threading.Thread.Sleep(1000);
             Task.Run(new Action(new SearchTicketServiceWorker(new SearchTicketManager(0,0,0,0,0), sm, cp).Do));
 
-            System.Threading.Thread.Sleep(3000);
+            //System.Threading.Thread.Sleep(2000);
 
-            var handler = new RequestHandler(sm, new TicketStateManager(), cp);
+            var handler = new DefaultMessageHandler();
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 2; i++)
             {
-                Task.Run(new Action(new Worker(handler).Do));
+                Task.Run(new Action(new Worker().Do));
             }
 
-            for (var i = 0; i < 40; i++)
+            int threads = 17;
+            int count = 2;
+            int readyToFinish = 0;
+            int countOfStarted = 0;
+
+            List<Task> tasks = new List<Task>(threads);
+            
+            new Thread(() =>
             {
-                Task.Run(new Action(() =>
+                while (countOfStarted < threads) { }
+                Console.WriteLine("LAUNCH!!!!!");
+                var w = new System.Diagnostics.Stopwatch();
+                w.Start();
+                startEvt.Set();
+                Task.WaitAll(tasks.ToArray());
+                w.Stop();
+                Console.WriteLine("TOTAL: " + w.Elapsed);
+            }).Start();
+
+            for (var i = 0; i < threads; i++)
+            {
+                var t = Task.Run(new Action(() =>
                 {
                     TimeSpan t1 = TimeSpan.Zero, t2 = TimeSpan.Zero, t3 = TimeSpan.Zero;
-                    
+
                     var r = new Random(DateTime.Today.Millisecond % (Thread.CurrentThread.ManagedThreadId + 1));
+                    BrokerClient client = new BrokerClient(handler, CommunicationPrimitives.ClientTypeId);
+                    client.count = i;
+
+                    Interlocked.Increment(ref countOfStarted);
+
                     startEvt.WaitOne();
+
                     System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
                     w.Start();
                     Console.WriteLine(" START");
                     var sessionId = sm.Login("u", "p");
                     var start = DateTime.Now;
-                    int count = 800;
-                    for (var c = 0; c < count; c++)
-                    {
-                        using (var client = cp.GetClient<OperatorSessionServiceClient>())
-                        {
-                            var e = w.Elapsed;
-                            //Console.WriteLine(w.Elapsed + " FREE");
-                            client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
-                            {
-                                Event = SessionEventType.ChangeState,
-                                SessionId = sessionId,
-                                OptionalParam = SessionStatus.Free
-                            });
-                            t1 += w.Elapsed - e;
-                            //Console.WriteLine(w.Elapsed + " Wait");
-                            //while (sm.GetSession(sessionId).TicketId == 0) { }
-                            //Console.WriteLine(w.Elapsed + " Call");
-                            e = w.Elapsed;
-                            client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
-                            {
-                                Event = SessionEventType.ConfirmCall,
-                                SessionId = sessionId
-                            });
-                            t2 += w.Elapsed - e;
-                            Thread.Sleep(r.Next(0, 90));
 
-                            e = w.Elapsed;
-                            //Console.WriteLine(w.Elapsed + " Busy");
-                            client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
-                            {
-                                Event = SessionEventType.ChangeState,
-                                SessionId = sessionId,
-                                OptionalParam = SessionStatus.Busy
-                            });
-                            t3 += w.Elapsed - e;
-                        }
-
-                    }
-                    //Console.WriteLine(w.Elapsed + " Logout");
-                    using (var client = cp.GetClient<OperatorSessionServiceClient>())
+                    int c = 0;
+                    for (; ; c++ )
                     {
-                        client.Instance.SendOperatorCommand(new OperatorSessionEventMsg()
+
+                        var e = w.Elapsed;
+                        //Console.WriteLine(w.Elapsed + " FREE");
+
+                        client.SendOperatorCommand(new OperatorSessionEventMsg()
                         {
-                            Event = SessionEventType.Logout,
+                            Event = SessionEventType.ChangeState,
+                            SessionId = sessionId,
+                            OptionalParam = SessionStatus.Free
+                        });
+                        t1 += w.Elapsed - e;
+
+                        e = w.Elapsed;
+                        client.SendOperatorCommand(new OperatorSessionEventMsg()
+                        {
+                            Event = SessionEventType.ConfirmCall,
                             SessionId = sessionId
                         });
+                        t2 += w.Elapsed - e;
+                        Thread.Sleep(r.Next(0, 120));
+
+                        e = w.Elapsed;
+                        //Console.WriteLine(w.Elapsed + " Busy");
+                        client.SendOperatorCommand(new OperatorSessionEventMsg()
+                        {
+                            Event = SessionEventType.ChangeState,
+                            SessionId = sessionId,
+                            OptionalParam = SessionStatus.Busy
+                        });
+                        t3 += w.Elapsed - e;
+
+                        if (c >= count)
+                        {
+                            if (c == count)
+                                Interlocked.Increment(ref readyToFinish);
+                            if (readyToFinish == threads)
+                                break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("ID=" + Thread.CurrentThread.ManagedThreadId);
+                        }
                     }
+                    client.Close();
+                    //Console.WriteLine(w.Elapsed + " Logout");
+                    var client1 = new BrokerClient(handler, CommunicationPrimitives.ClientTypeId);
+
+                    client1.SendOperatorCommand(new OperatorSessionEventMsg()
+                    {
+                        Event = SessionEventType.Logout,
+                        SessionId = sessionId
+                    });
+                    client1.Close();
                     var end = DateTime.Now;
                     w.Stop();
 
@@ -106,13 +142,15 @@ namespace Queue
                     t2 = new TimeSpan(t2.Ticks / count);
                     t3 = new TimeSpan(t3.Ticks / count);
                     //Console.WriteLine(string.Format("{0} END: t1={1}, t2={2}, t3={3}", 
-                      //  new TimeSpan(avr), t1, t2, t3));
-                    Console.WriteLine("{0} - {1}", start.ToString("hh:mm:ss.fff tt"),
+                    //  new TimeSpan(avr), t1, t2, t3));
+                    Console.WriteLine("{0}, {1} - {2}", Thread.CurrentThread.ManagedThreadId, start.ToString("hh:mm:ss.fff tt"),
                         end.ToString("hh:mm:ss.fff tt"));
                 }));
+
+                tasks.Add(t);
             }
 
-            startEvt.Set();
+            //startEvt.Set();
 
             char k = 'a';
             do

@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestQueueService", "Queue\TestQueueService.csproj", "{E974407A-B138-4688-8B2F-5E5CB892735B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EQ.Domain.v2", "EQ.Domain.v2\EQ.Domain.v2.csproj", "{BC7A9A16-C6DA-483F-B6F7-59DDE784F7CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetMQ", "NetMQ\NetMQ.csproj", "{82934BAC-07FB-41AC-AE59-46FEE6026A40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,8 +29,17 @@ Global
 		{BC7A9A16-C6DA-483F-B6F7-59DDE784F7CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC7A9A16-C6DA-483F-B6F7-59DDE784F7CD}.Release|x86.ActiveCfg = Release|x86
 		{BC7A9A16-C6DA-483F-B6F7-59DDE784F7CD}.Release|x86.Build.0 = Release|x86
+		{82934BAC-07FB-41AC-AE59-46FEE6026A40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82934BAC-07FB-41AC-AE59-46FEE6026A40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82934BAC-07FB-41AC-AE59-46FEE6026A40}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{82934BAC-07FB-41AC-AE59-46FEE6026A40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82934BAC-07FB-41AC-AE59-46FEE6026A40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82934BAC-07FB-41AC-AE59-46FEE6026A40}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

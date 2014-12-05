@@ -36,14 +36,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections">
       <HintPath>..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="NetMQ">
-      <HintPath>..\packages\NetMQ.3.3.0.10\lib\net40\NetMQ.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -61,8 +61,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ByteArrayComparer.cs" />
     <Compile Include="Common\ObjExtension.cs" />
+    <Compile Include="Communication\BrokerPushClient.cs" />
     <Compile Include="Communication\ClientWrapper.cs" />
+    <Compile Include="Communication\CommunicationPrimitives.cs" />
     <Compile Include="Communication\ConnectionPool.cs" />
     <Compile Include="Communication\Dto\QueryTicketMsg.cs" />
     <Compile Include="Communication\Dto\TabloMsg.cs" />
@@ -73,23 +76,31 @@
     <Compile Include="Config.cs" />
     <Compile Include="Communication\OperatorSessionServiceBroker.cs" />
     <Compile Include="Communication\Dto\SessionEventType.cs" />
+    <Compile Include="DefaultMessageHandler.cs" />
     <Compile Include="IncorrectOperatorAction.cs" />
+    <Compile Include="Ioc\DependencyBuilder.cs" />
     <Compile Include="IQueryTicketManager.cs" />
+    <Compile Include="IRequestHandler.cs" />
     <Compile Include="OperatorSession.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Communication\Dto\OperatorSessionEventMsg.cs" />
     <Compile Include="OperatorSessionManager.cs" />
     <Compile Include="Communication\SearchTicketServiceWorker.cs" />
+    <Compile Include="ReplyStatus.cs" />
     <Compile Include="RequestHandler.cs" />
+    <Compile Include="RequestStatus.cs" />
     <Compile Include="SearchTicketManager.cs" />
     <Compile Include="SessionStatus.cs" />
+    <Compile Include="SessionTaskManager.cs" />
     <Compile Include="StopSignal.cs" />
     <Compile Include="Communication\TabloServiceClient.cs" />
     <Compile Include="Communication\TicketStateManager.cs" />
-    <Compile Include="Communication\Worker.cs" />
+    <Compile Include="Communication\WorkerApi.cs" />
     <Compile Include="Communication\ZMessage.cs" />
     <Compile Include="Communication\ZMessageSessioned.cs" />
+    <Compile Include="Worker.cs" />
+    <Compile Include="WorkerMessageHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -100,7 +111,12 @@
       <Project>{bc7a9a16-c6da-483f-b6f7-59dde784f7cd}</Project>
       <Name>EQ.Domain.v2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NetMQ\NetMQ.csproj">
+      <Project>{82934bac-07fb-41ac-ae59-46fee6026a40}</Project>
+      <Name>NetMQ</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
