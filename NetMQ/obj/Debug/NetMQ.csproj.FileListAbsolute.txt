@@ -1,6 +1,0 @@
-C:\Projects\TestQueueService\NetMQ\obj\Debug\NetMQ.csprojResolveAssemblyReference.cache
-C:\Projects\TestQueueService\NetMQ\bin\Debug\NetMQ.dll
-C:\Projects\TestQueueService\NetMQ\bin\Debug\NetMQ.pdb
-C:\Projects\TestQueueService\NetMQ\bin\Debug\AsyncIO.dll
-C:\Projects\TestQueueService\NetMQ\obj\Debug\NetMQ.dll
-C:\Projects\TestQueueService\NetMQ\obj\Debug\NetMQ.pdb
