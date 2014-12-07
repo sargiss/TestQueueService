@@ -18,6 +18,7 @@ namespace Queue
             var reply = new ZMessage();
             var action = zmsg.PopStr();
             var sessionKey = zmsg.PopStr();
+
             switch (action)
             {
                 case RequestStatus.PUT_SESSION_TASK:

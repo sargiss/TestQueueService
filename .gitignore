@@ -11,7 +11,7 @@ Debug/
 DebugPublic/ 
 Release/ 
 Releases/ 
-obj/ 
+obj
 
 
 # Recycle Bin used on file shares
@@ -50,3 +50,4 @@ Icon
 *.exe
 *.pdb
 *.exe
+*.cache
