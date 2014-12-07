@@ -7,11 +7,11 @@ Desktop.ini
 
 #Solution output
 
-**/Debug/ 
-**/DebugPublic/ 
-**/Release/ 
-**/Releases/ 
-**/Obj/ 
+Debug/ 
+DebugPublic/ 
+Release/ 
+Releases/ 
+Obj/ 
 
 
 # Recycle Bin used on file shares
