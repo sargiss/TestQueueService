@@ -11,7 +11,7 @@ Debug/
 DebugPublic/ 
 Release/ 
 Releases/ 
-obj
+obj/
 
 
 # Recycle Bin used on file shares
@@ -37,7 +37,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must ends with two \r.
-Icon
+Icon
+
 
 # Thumbnails
 ._*
