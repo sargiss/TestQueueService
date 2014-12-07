@@ -11,7 +11,7 @@ Debug/
 DebugPublic/ 
 Release/ 
 Releases/ 
-Obj/ 
+obj/ 
 
 
 # Recycle Bin used on file shares
