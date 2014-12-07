@@ -5,6 +5,15 @@ ehthumbs.db
 # Folder config file
 Desktop.ini
 
+#Solution output
+
+[Dd]ebug/ 
+[Dd]ebugPublic/ 
+[Rr]elease/ 
+[Rr]eleases/ 
+[Oo]bj/ 
+
+
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
