@@ -63,16 +63,20 @@
   <ItemGroup>
     <Compile Include="Common\ByteArrayComparer.cs" />
     <Compile Include="Common\ObjExtension.cs" />
-    <Compile Include="Communication\BrokerPushClient.cs" />
+    <Compile Include="Communication\BrokerClient.cs" />
+    <Compile Include="Communication\ClientBase.cs" />
     <Compile Include="Communication\ClientWrapper.cs" />
     <Compile Include="Communication\CommunicationPrimitives.cs" />
     <Compile Include="Communication\ConnectionPool.cs" />
+    <Compile Include="Communication\ContextFactory.cs" />
     <Compile Include="Communication\Dto\QueryTicketMsg.cs" />
     <Compile Include="Communication\Dto\TabloMsg.cs" />
     <Compile Include="Communication\Dto\ServiceTicketStatus.cs" />
     <Compile Include="Communication\IServiceClient.cs" />
-    <Compile Include="Communication\OperatorSessionServiceClient.cs" />
     <Compile Include="Communication\SearchTicketServiceClient.cs" />
+    <Compile Include="Communication\SessionManagerService.cs" />
+    <Compile Include="Communication\TaskManagerServiceWorker.cs" />
+    <Compile Include="Communication\WorkerClient.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Communication\OperatorSessionServiceBroker.cs" />
     <Compile Include="Communication\Dto\SessionEventType.cs" />
@@ -94,11 +98,9 @@
     <Compile Include="SessionStatus.cs" />
     <Compile Include="SessionTaskManager.cs" />
     <Compile Include="StopSignal.cs" />
-    <Compile Include="Communication\TabloServiceClient.cs" />
     <Compile Include="Communication\TicketStateManager.cs" />
     <Compile Include="Communication\WorkerApi.cs" />
     <Compile Include="Communication\ZMessage.cs" />
-    <Compile Include="Communication\ZMessageSessioned.cs" />
     <Compile Include="Worker.cs" />
     <Compile Include="WorkerMessageHandler.cs" />
   </ItemGroup>
